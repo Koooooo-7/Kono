@@ -1,2 +1,3 @@
 port:
   9001
+controllerLocation: com.koy.kono.app

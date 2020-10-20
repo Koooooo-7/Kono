@@ -5,6 +5,7 @@ package com.koy.kono.kono.enums;
  * @Description
  */
 
-public enum Protocol {
-    HTTP;
+public enum RouterMatch {
+    NOT_FOUND,
+    FOUND;
 }
