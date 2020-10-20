@@ -48,13 +48,8 @@ public class ApplicationContext {
     }
 
     private void loadControllers(Configuration configuration) {
-        String packageName = configuration.getControllerLocation();
-        Reflections reflections = new Reflections(packageName);
-
-        Set<Class<? extends BaseController>> classes = reflections.getSubTypesOf(BaseController.class);
-        if (classes.isEmpty()) {
-            throw new IllegalStateException("no controller can be found under the declare controller location");
-        }
+        ControllerClassLoader controllerClassLoader = new ControllerClassLoader();
+        Set<Class<? extends BaseController>> classes = controllerClassLoader.findControllerClasses(configuration);
 
         for (Class<?> clz : classes) {
             this.wrapperMetaController(clz, clz.getMethods(), configuration);
