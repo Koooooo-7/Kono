@@ -4,6 +4,11 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.*;
 
+/**
+ * @author Koy  https://github.com/Koooooo-7
+ * @Description
+ */
+
 public class ConfigurationLoader {
     public static final String CONFIG_FILE_NAME = "/configuration.yml";
 
@@ -19,7 +24,6 @@ public class ConfigurationLoader {
 
     private Configuration loadResource() {
         Configuration configuration = new Configuration();
-
 
         try (InputStream in = ConfigurationLoader.class.getResourceAsStream(ConfigurationLoader.CONFIG_FILE_NAME)) {
             Yaml yaml = new Yaml();
