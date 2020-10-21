@@ -4,7 +4,10 @@ import com.koy.kono.kono.core.*;
 import com.koy.kono.kono.enums.RouterMatch;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpResponse;
+import io.netty.handler.codec.http.HttpResponseStatus;
+import io.netty.handler.codec.http.HttpVersion;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -32,7 +35,10 @@ public class DispatcherHandler implements Dispatcher {
         Dispatch dispatch = routeParser.dispatch(ctx, channelHandlerContext, handler);
         RouterMatch routerMatch = dispatch.getRouterMatch();
         if (RouterMatch.NOT_FOUND == routerMatch) {
-            // TODO
+            // TODO redirect to miss controller
+            dispatch(new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.NOT_FOUND));
+            // finished
+            return null;
         }
 
         MetaController targetController = dispatch.getTargetController();
@@ -54,7 +60,7 @@ public class DispatcherHandler implements Dispatcher {
         }
     }
 
-    public void dispatch(FullHttpResponse response){
+    public void dispatch(FullHttpResponse response) {
         channelHandlerContext.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
         this.applicationContext.removeRequestContext();
     }

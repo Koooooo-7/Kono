@@ -30,9 +30,8 @@ public class RouteParser implements Dispatcher {
 
         Router router = routers.get(controllerRoute.toLowerCase());
         if (Objects.isNull(router)) {
-            // TODO
-            return null;
-//            return new Dispatch(RouterMatch.NOT_FOUND, channelHandlerContext, handler, null, null);
+            // TODO redirect to miss controller
+            return new Dispatch(RouterMatch.NOT_FOUND, channelHandlerContext, handler, null, null);
         }
         Router matchRouter = router.getMatchRouter(method);
         return new Dispatch(matchRouter.getRouterMatch(), channelHandlerContext, handler, matchRouter.getMetaController(), matchRouter.getMatchedMethod());
