@@ -21,14 +21,17 @@ public class RequestContext {
 
     private FullHttpRequest request;
 
+    private ApplicationContext applicationContext;
+
     private HttpMethod methodType;
 
     private String url;
 
     private Map<String, Object> paramsCache;
 
-    public RequestContext(FullHttpRequest request) {
+    public RequestContext(FullHttpRequest request, ApplicationContext ctx) {
         this.request = request;
+        this.applicationContext = ctx;
         this.methodType = request.method();
         this.url = request.uri();
     }
@@ -36,13 +39,15 @@ public class RequestContext {
 
     public static class Builder {
         private FullHttpRequest request;
+        private ApplicationContext ctx;
 
         private HttpMethod methodType;
 
         private String url;
 
-        public Builder setRequest(FullHttpRequest request) {
+        public Builder setRequest(FullHttpRequest request, ApplicationContext applicationContext) {
             this.request = request;
+            this.ctx = applicationContext;
             return this;
         }
 
@@ -57,7 +62,7 @@ public class RequestContext {
         }
 
         public RequestContext build() {
-            return new RequestContext(this.request);
+            return new RequestContext(this.request, ctx);
         }
     }
 
@@ -142,7 +147,7 @@ public class RequestContext {
         return new Response<T>(this, data);
     }
 
-    // TODO
+
     public <T> Response.Builder<T> sendBuilder(T data) {
         Response<T> response = new Response<T>(this, data);
         return new Response.Builder<T>(response);
@@ -169,10 +174,12 @@ public class RequestContext {
             return dataWrapper;
         }
 
-        public void json() {
-            // TODO: send
+        public FullHttpResponse getResponse() {
+            return response;
+        }
 
-//            response.
+        public void json() {
+            this.requestContext.applicationContext.getDispatcherHandler().dispatch(response);
         }
 
 
@@ -180,7 +187,7 @@ public class RequestContext {
             private Response<T> response;
             private HttpVersion httpVersion = HttpVersion.HTTP_1_1;
             private HttpResponseStatus responseStatus = HttpResponseStatus.FOUND;
-            private HttpHeaders httpHeaders;
+            private HttpHeaders httpHeaders = new DefaultHttpHeaders().set("Content-Type", "application/json");
             private boolean validateHeaders = true;
             private boolean singleFieldHeaders = false;
             private HttpHeaders trailingHeaders = singleFieldHeaders ? new CombinedHttpHeaders(validateHeaders)
@@ -211,7 +218,6 @@ public class RequestContext {
                         new DefaultFullHttpResponse(httpVersion, responseStatus
                                 , Unpooled.wrappedBuffer(response.getDataWrapper().getData()), httpHeaders, trailingHeaders));
             }
-
 
         }
 

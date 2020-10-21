@@ -28,7 +28,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, FullHttpRequest fullHttpRequest) {
 
         RequestContext requestContext = requestContextSupplier.get()
-                .setRequest(fullHttpRequest)
+                .setRequest(fullHttpRequest, applicationContext)
                 .setRequestUrl(fullHttpRequest.uri())
                 .setRequestMethodType(fullHttpRequest.method())
                 .build();
@@ -40,22 +40,5 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
         applicationContext.removeRequestContext();
 
     }
-
-
-//        // POST
-//        HttpMethod method = fullHttpRequest.method();
-//
-//        //
-//        String uri = fullHttpRequest.uri();
-//        FullHttpResponse response = new DefaultFullHttpResponse(
-//                HttpVersion.HTTP_1_1, HttpResponseStatus.OK,
-//                Unpooled.wrappedBuffer("11".getBytes()));
-//
-//        response.headers().set("Content-Type", "application/xml");
-//
-//        response.headers().setInt("11",
-//                response.content().readableBytes());
-//        System.out.println(uri);
-//        channelHandlerContext.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
 
 }

@@ -35,7 +35,7 @@ public class ApplicationContext {
         loadControllers(configuration);
         controllerFactory = new ControllerFactory(metaControllers);
         RouteParser routeParser = new RouteParser(controllerFactory);
-        dispatcherHandler = new DispatcherHandler(routeParser);
+        dispatcherHandler = new DispatcherHandler(routeParser, this);
     }
 
     public ControllerFactory getControllerFactory() {

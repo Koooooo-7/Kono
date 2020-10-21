@@ -1,11 +1,10 @@
 package com.koy.kono.kono.route;
 
-import com.koy.kono.kono.core.BaseController;
-import com.koy.kono.kono.core.ControllerFactory;
-import com.koy.kono.kono.core.MetaController;
-import com.koy.kono.kono.core.RequestContext;
+import com.koy.kono.kono.core.*;
 import com.koy.kono.kono.enums.RouterMatch;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.http.FullHttpResponse;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -18,16 +17,18 @@ import java.lang.reflect.Method;
 public class DispatcherHandler implements Dispatcher {
 
     private RouteParser routeParser;
+    private ApplicationContext applicationContext;
+    private ChannelHandlerContext channelHandlerContext;
 
-    private DispatcherHandler self;
-
-    public DispatcherHandler(RouteParser routeParser) {
+    public DispatcherHandler(RouteParser routeParser, ApplicationContext ctx) {
         this.routeParser = routeParser;
-        self = this;
+        this.applicationContext = ctx;
     }
 
     @Override
     public Dispatch dispatch(RequestContext ctx, ChannelHandlerContext channelHandlerContext, ControllerFactory handler) {
+        this.channelHandlerContext = channelHandlerContext;
+
         Dispatch dispatch = routeParser.dispatch(ctx, channelHandlerContext, handler);
         RouterMatch routerMatch = dispatch.getRouterMatch();
         if (RouterMatch.NOT_FOUND == routerMatch) {
@@ -51,5 +52,10 @@ public class DispatcherHandler implements Dispatcher {
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
         }
+    }
+
+    public void dispatch(FullHttpResponse response){
+        channelHandlerContext.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
+        this.applicationContext.removeRequestContext();
     }
 }
