@@ -9,6 +9,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -186,7 +187,7 @@ public class RequestContext {
         public static class Builder<T> {
             private Response<T> response;
             private HttpVersion httpVersion = HttpVersion.HTTP_1_1;
-            private HttpResponseStatus responseStatus = HttpResponseStatus.FOUND;
+            private HttpResponseStatus responseStatus = HttpResponseStatus.OK;
             private HttpHeaders httpHeaders = new DefaultHttpHeaders().set("Content-Type", "application/json");
             private boolean validateHeaders = true;
             private boolean singleFieldHeaders = false;
@@ -213,7 +214,8 @@ public class RequestContext {
             }
 
             public Response<T> build() {
-
+                // make sure it is ["Content-Type", "application/json"]
+                this.httpHeaders.set("Content-Type", "application/json");
                 return this.response.setResponse(
                         new DefaultFullHttpResponse(httpVersion, responseStatus
                                 , Unpooled.wrappedBuffer(response.getDataWrapper().getData()), httpHeaders, trailingHeaders));
@@ -230,6 +232,9 @@ public class RequestContext {
             }
 
             public byte[] getData() {
+                if (Objects.isNull(data)) {
+                    return "".getBytes();
+                }
                 String jsonData = JSON.toJSONString(data);
                 return jsonData.getBytes();
             }
