@@ -1,7 +1,6 @@
 package com.koy.kono.kono.core;
 
-import com.alibaba.fastjson.JSONObject;
-import io.netty.buffer.ByteBuf;
+import com.alibaba.fastjson.JSON;
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.http.*;
 import io.netty.util.internal.StringUtil;
@@ -21,8 +20,6 @@ import java.util.function.Function;
 public class RequestContext {
 
     private FullHttpRequest request;
-
-    private FullHttpResponse response;
 
     private HttpMethod methodType;
 
@@ -141,26 +138,95 @@ public class RequestContext {
     }
 
 
-    public Response send() {
-        return new Response(response);
+    public <T> Response<T> send(T data) {
+        return new Response<T>(this, data);
     }
 
     // TODO
-    public Response sendBuilder() {
-        return null;
+    public <T> Response.Builder<T> sendBuilder(T data) {
+        Response<T> response = new Response<T>(this, data);
+        return new Response.Builder<T>(response);
     }
 
-    public static class Response {
+    public static class Response<T> {
 
         private FullHttpResponse response;
+        private RequestContext requestContext;
+        private DataWrapper<T> dataWrapper;
 
-        public Response(FullHttpResponse response) {
-            this.response = response;
+        public Response(RequestContext ctx, T data) {
+            this.requestContext = ctx;
+            this.dataWrapper = new DataWrapper<T>(data);
+            new Builder<T>(this).build();
         }
 
-        public <T> Response json(T data) {
-//            response.
+        public Response<T> setResponse(FullHttpResponse response) {
+            this.response = response;
             return this;
+        }
+
+        public DataWrapper<T> getDataWrapper() {
+            return dataWrapper;
+        }
+
+        public void json() {
+            // TODO: send
+
+//            response.
+        }
+
+
+        public static class Builder<T> {
+            private Response<T> response;
+            private HttpVersion httpVersion = HttpVersion.HTTP_1_1;
+            private HttpResponseStatus responseStatus = HttpResponseStatus.FOUND;
+            private HttpHeaders httpHeaders;
+            private boolean validateHeaders = true;
+            private boolean singleFieldHeaders = false;
+            private HttpHeaders trailingHeaders = singleFieldHeaders ? new CombinedHttpHeaders(validateHeaders)
+                    : new DefaultHttpHeaders(validateHeaders);
+
+            public Builder(Response<T> response) {
+                this.response = response;
+            }
+
+//            private Builder setHttpVersion(HttpVersion httpVersion) {
+//                this.httpVersion = httpVersion;
+//                return this;
+//            }
+
+            public Builder<T> setHttpResponseStatus(HttpResponseStatus status) {
+                this.responseStatus = status;
+                return this;
+            }
+
+            public Builder<T> setHttpHeaders(HttpHeaders httpHeaders) {
+                this.httpHeaders = httpHeaders;
+                return this;
+            }
+
+            public Response<T> build() {
+
+                return this.response.setResponse(
+                        new DefaultFullHttpResponse(httpVersion, responseStatus
+                                , Unpooled.wrappedBuffer(response.getDataWrapper().getData()), httpHeaders, trailingHeaders));
+            }
+
+
+        }
+
+
+        static class DataWrapper<V> {
+            private V data;
+
+            public DataWrapper(V data) {
+                this.data = data;
+            }
+
+            public byte[] getData() {
+                String jsonData = JSON.toJSONString(data);
+                return jsonData.getBytes();
+            }
         }
 
     }
