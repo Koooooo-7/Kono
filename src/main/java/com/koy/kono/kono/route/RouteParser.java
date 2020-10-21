@@ -3,6 +3,7 @@ package com.koy.kono.kono.route;
 import com.koy.kono.kono.core.BaseController;
 import com.koy.kono.kono.core.ControllerFactory;
 import com.koy.kono.kono.core.MetaController;
+import com.koy.kono.kono.core.RequestContext;
 import com.koy.kono.kono.core.annotation.KonoMethod;
 import com.koy.kono.kono.enums.RouterMatch;
 import io.netty.channel.ChannelHandlerContext;
@@ -18,19 +19,19 @@ public class RouteParser implements Dispatcher {
     private static final ConcurrentHashMap<String, Router> routers = new ConcurrentHashMap<>();
 
     @Override
-    public Dispatch dispatch(FullHttpRequest fullHttpRequest, ChannelHandlerContext channelHandlerContext, ControllerFactory handler) {
+    public Dispatch dispatch(RequestContext ctx, ChannelHandlerContext channelHandlerContext, ControllerFactory handler) {
 
+        FullHttpRequest fullHttpRequest = ctx.getRequest();
         String url = fullHttpRequest.uri();
-        int first = url.indexOf('/');
-        String route = url.substring(first);
-        int second = route.indexOf('/');
-        String controller = route.substring(0, second);
-        int last = route.indexOf('?');
-        String method = route.substring(second + 1, last);
+        int methodIndex = url.lastIndexOf('/');
+        int paramsIndex = url.indexOf('?');
+        String controllerRoute = url.substring(0, methodIndex);
+        String method = url.substring(methodIndex + 1, paramsIndex == -1 ? url.length() - 1 : paramsIndex);
 
-        Router router = routers.get(controller);
+        Router router = routers.get(controllerRoute.toLowerCase());
         if (Objects.isNull(router)) {
             // TODO
+            return null;
 //            return new Dispatch(RouterMatch.NOT_FOUND, channelHandlerContext, handler, null, null);
         }
         Router matchRouter = router.getMatchRouter(method);
@@ -64,12 +65,11 @@ public class RouteParser implements Dispatcher {
 
         public Router getMatchRouter(final String methodName) {
             Method matchMethod = getMatchMethod(methodName);
-            if ("miss".equals(matchMethod.getName()) && Objects.nonNull(matchMethod.getAnnotation(KonoMethod.class))) {
+            if ("miss".equalsIgnoreCase(matchMethod.getName()) && Objects.nonNull(matchMethod.getAnnotation(KonoMethod.class))) {
                 routerMatch = RouterMatch.NOT_FOUND;
                 matchedMethod = matchMethod;
                 return this;
             }
-
 
             routerMatch = RouterMatch.FOUND;
             matchedMethod = matchMethod;
@@ -91,10 +91,11 @@ public class RouteParser implements Dispatcher {
         private Method getMatchMethod(String methodName) {
             return metaController.getMethods()
                     .parallelStream()
-                    .filter(method -> methodName.equals(method.getName()))
+                    .filter(method -> methodName.equalsIgnoreCase(method.getName()))
                     .findFirst()
                     .orElseGet(() -> {
                         try {
+                            // TODO: abstract method can not be invoked
                             return BaseController.class.getMethod("miss");
                         } catch (NoSuchMethodException ignore) {
                         }
@@ -105,6 +106,6 @@ public class RouteParser implements Dispatcher {
     }
 
     private void addRouter(String baseRouter, Router router) {
-        routers.put(baseRouter, router);
+        routers.put(baseRouter.toLowerCase(), router);
     }
 }

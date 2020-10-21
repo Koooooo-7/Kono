@@ -1,6 +1,7 @@
 package com.koy.kono.kono.route;
 
 import com.koy.kono.kono.core.ControllerFactory;
+import com.koy.kono.kono.core.RequestContext;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
 
@@ -11,6 +12,6 @@ import io.netty.handler.codec.http.FullHttpRequest;
 
 public interface Dispatcher {
 
-    Dispatch dispatch(FullHttpRequest fullHttpRequest, ChannelHandlerContext channelHandlerContext, ControllerFactory handler);
+    Dispatch dispatch(RequestContext ctx, ChannelHandlerContext channelHandlerContext, ControllerFactory handler);
 
 }

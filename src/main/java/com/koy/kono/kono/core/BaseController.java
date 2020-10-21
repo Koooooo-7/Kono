@@ -26,6 +26,12 @@ public abstract class BaseController {
         return requestContext;
     }
 
+    // Injection method
+    @KonoMethod
+    private void setRequestContext(RequestContext requestContext) {
+        this.requestContext = requestContext;
+    }
+
 
     public RequestContext getResponse() {
         return requestContext;

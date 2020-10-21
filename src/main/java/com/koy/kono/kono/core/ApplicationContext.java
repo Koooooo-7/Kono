@@ -3,7 +3,6 @@ package com.koy.kono.kono.core;
 import com.koy.kono.kono.route.DispatcherHandler;
 import com.koy.kono.kono.route.RouteParser;
 import io.netty.util.internal.StringUtil;
-import org.reflections.Reflections;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -60,7 +59,7 @@ public class ApplicationContext {
 
         try {
             Object instance = clz.getDeclaredConstructor().newInstance();
-            Method getBaseRouter = clz.getMethod("getBaseRouter");
+            Method getBaseRouter = clz.getMethod("getBaseRoute");
             String controllerName = (String) getBaseRouter.invoke(instance);
 
 //            controllerName = StringUtil.isNullOrEmpty(controllerName) ?
@@ -119,5 +118,13 @@ public class ApplicationContext {
 
     private Map<String, MetaController> getMetaController() {
         return metaControllers;
+    }
+
+    public void setConfigurationRequestContext(RequestContext ctx) {
+        requestContext.set(ctx);
+    }
+
+    public void removeRequestContext() {
+        requestContext.remove();
     }
 }

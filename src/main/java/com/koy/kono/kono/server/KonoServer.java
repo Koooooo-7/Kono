@@ -1,5 +1,6 @@
 package com.koy.kono.kono.server;
 
+import com.koy.kono.kono.core.ApplicationContext;
 import com.koy.kono.kono.core.Configuration;
 import com.koy.kono.kono.core.ConfigurationLoader;
 import io.netty.bootstrap.ServerBootstrap;
@@ -24,12 +25,18 @@ public class KonoServer {
         // Get Config
         ConfigurationLoader configurationLoader = new ConfigurationLoader();
         Configuration configuration = configurationLoader.configuration();
-
-        this.run(configuration);
+        ApplicationContext applicationContext = startApplication(configuration);
+        this.run(applicationContext, configuration);
     }
 
+    private ApplicationContext startApplication(Configuration configuration) {
+        ApplicationContext applicationContext = new ApplicationContext(configuration);
+        applicationContext.refresh();
+        return applicationContext;
+    }
 
-    public void run(Configuration configuration) {
+    public void run(ApplicationContext applicationContext, Configuration configuration) {
+
         NioEventLoopGroup bossGroup = new NioEventLoopGroup();
         NioEventLoopGroup workerGroup = new NioEventLoopGroup();
 
@@ -48,7 +55,7 @@ public class KonoServer {
                         protected void initChannel(SocketChannel socketChannel) {
                             ChannelPipeline p = socketChannel.pipeline();
                             // Handler
-                            ServiceHandlerFactory.getHandler(p, configuration);
+                            ServiceHandlerFactory.getHandler(p, applicationContext, configuration);
 
                         }
                     });

@@ -14,10 +14,9 @@ import io.netty.handler.codec.http.HttpResponseEncoder;
 
 public class ServiceHandlerFactory {
 
-    static void getHandler(ChannelPipeline p, Configuration configuration) {
+    static void getHandler(ChannelPipeline p, ApplicationContext applicationContext, Configuration configuration) {
         switch (configuration.getProtocol()) {
             case HTTP:
-                ApplicationContext applicationContext = startApplication(configuration);
                 createHttpHandler(p, applicationContext);
                 break;
             default:
@@ -32,11 +31,5 @@ public class ServiceHandlerFactory {
                 .addLast("handler", new HttpServerHandler(applicationContext));
     }
 
-
-    private static ApplicationContext startApplication(Configuration configuration) {
-        ApplicationContext applicationContext = new ApplicationContext(configuration);
-        applicationContext.refresh();
-        return applicationContext;
-    }
 
 }

@@ -2,12 +2,13 @@ package com.koy.kono.kono.server;
 
 import com.koy.kono.kono.core.ApplicationContext;
 import com.koy.kono.kono.core.ControllerFactory;
+import com.koy.kono.kono.core.RequestContext;
 import com.koy.kono.kono.route.DispatcherHandler;
-import io.netty.buffer.Unpooled;
-import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.*;
+
+import java.util.function.Supplier;
 
 /**
  * @author Koy  https://github.com/Koooooo-7
@@ -15,6 +16,8 @@ import io.netty.handler.codec.http.*;
  */
 
 public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
+
+    Supplier<RequestContext.Builder> requestContextSupplier = RequestContext.Builder::new;
 
     private ApplicationContext applicationContext;
 
@@ -24,9 +27,17 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
 
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, FullHttpRequest fullHttpRequest) {
 
+        RequestContext requestContext = requestContextSupplier.get()
+                .setRequest(fullHttpRequest)
+                .setRequestUrl(fullHttpRequest.uri())
+                .setRequestMethodType(fullHttpRequest.method())
+                .build();
+
+        applicationContext.setConfigurationRequestContext(requestContext);
         DispatcherHandler dispatcherHandler = applicationContext.getDispatcherHandler();
         ControllerFactory handler = applicationContext.getControllerFactory();
-        dispatcherHandler.dispatch(fullHttpRequest, channelHandlerContext, handler);
+        dispatcherHandler.dispatch(requestContext, channelHandlerContext, handler);
+        applicationContext.removeRequestContext();
 
     }
 

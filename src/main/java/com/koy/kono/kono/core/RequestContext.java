@@ -1,8 +1,9 @@
 package com.koy.kono.kono.core;
 
-import io.netty.handler.codec.http.FullHttpRequest;
-import io.netty.handler.codec.http.FullHttpResponse;
-import io.netty.handler.codec.http.HttpMethod;
+import com.alibaba.fastjson.JSONObject;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import io.netty.handler.codec.http.*;
 import io.netty.util.internal.StringUtil;
 
 import java.io.UnsupportedEncodingException;
@@ -29,14 +30,42 @@ public class RequestContext {
 
     private Map<String, Object> paramsCache;
 
-    public RequestContext(FullHttpRequest request, FullHttpResponse response) {
+    public RequestContext(FullHttpRequest request) {
         this.request = request;
-        this.response = response;
         this.methodType = request.method();
         this.url = request.uri();
     }
 
-    public  <T> Optional<T> get(String paramsName) {
+
+    public static class Builder {
+        private FullHttpRequest request;
+
+        private HttpMethod methodType;
+
+        private String url;
+
+        public Builder setRequest(FullHttpRequest request) {
+            this.request = request;
+            return this;
+        }
+
+        public Builder setRequestMethodType(HttpMethod methodType) {
+            this.methodType = methodType;
+            return this;
+        }
+
+        public Builder setRequestUrl(String url) {
+            this.url = url;
+            return this;
+        }
+
+        public RequestContext build() {
+            return new RequestContext(this.request);
+        }
+    }
+
+
+    public <T> Optional<T> get(String paramsName) {
         if (methodType != HttpMethod.GET) {
             return Optional.empty();
         }
@@ -121,7 +150,7 @@ public class RequestContext {
         return null;
     }
 
-     public static class Response {
+    public static class Response {
 
         private FullHttpResponse response;
 
@@ -129,12 +158,14 @@ public class RequestContext {
             this.response = response;
         }
 
-        public Response json(Map<String, Object> map) {
+        public <T> Response json(T data) {
 //            response.
             return this;
         }
 
+    }
 
-
+    public FullHttpRequest getRequest() {
+        return request;
     }
 }
