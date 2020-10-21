@@ -26,7 +26,7 @@ public class RouteParser implements Dispatcher {
         int methodIndex = url.lastIndexOf('/');
         int paramsIndex = url.indexOf('?');
         String controllerRoute = url.substring(0, methodIndex);
-        String method = url.substring(methodIndex + 1, paramsIndex == -1 ? url.length() - 1 : paramsIndex);
+        String method = url.substring(methodIndex + 1, paramsIndex == -1 ? url.length() : paramsIndex);
 
         Router router = routers.get(controllerRoute.toLowerCase());
         if (Objects.isNull(router)) {
