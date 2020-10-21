@@ -1,16 +1,16 @@
 package com.koy.kono.kono.core;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.http.*;
 import io.netty.util.internal.StringUtil;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 import java.util.function.Function;
 
 /**
@@ -19,6 +19,10 @@ import java.util.function.Function;
  */
 
 public class RequestContext {
+
+    public static final String POST_JSON_OBJECT_KEY = "kono.post.json.object";
+    public static final String POST_STRING_KEY = "kono.post.string";
+
 
     private FullHttpRequest request;
 
@@ -81,8 +85,32 @@ public class RequestContext {
         return o;
     }
 
+    @SuppressWarnings("unchecked")
+    public <T> Optional<T> post() {
+        if (methodType != HttpMethod.POST) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable((T) this.getPostParamsCache().get(POST_JSON_OBJECT_KEY));
+    }
+
     public <T> Optional<T> post(String paramsName) {
-        return Optional.empty();
+        if (methodType != HttpMethod.POST) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(this.getPostParam(paramsName));
+    }
+
+    public <T> Optional<T> post(Class<T> clz) {
+        if (methodType != HttpMethod.POST) {
+            return Optional.empty();
+        }
+
+        try {
+            return Optional.ofNullable(this.getPostParam(clz));
+        } catch (Exception e) {
+            throw new ClassCastException("can not cast post data to specific class type");
+        }
+
     }
 
     public <T> Optional<T> post(String paramsName, Function<T, T> func) {
@@ -93,11 +121,21 @@ public class RequestContext {
 
 
     @SuppressWarnings("unchecked")
-    private <T> T getGetParam(String paramsName) {
-        return (T) this.getParamsCache().get(paramsName);
+    private <T> T getPostParam(String paramsName) {
+        return (T) ((JSONObject) this.getPostParamsCache().get(POST_JSON_OBJECT_KEY)).get(paramsName);
     }
 
-    private Map<String, Object> getParamsCache() {
+    private <T> T getPostParam(Class<T> clz) {
+        String postString = (String) this.getPostParamsCache().get(POST_STRING_KEY);
+        return JSON.parseObject(postString, clz);
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> T getGetParam(String paramsName) {
+        return (T) this.getGetParamsCache().get(paramsName);
+    }
+
+    private Map<String, Object> getGetParamsCache() {
         if (this.paramsCache == null) {
             synchronized (this) {
                 if (this.paramsCache == null) {
@@ -134,6 +172,28 @@ public class RequestContext {
         }
         return this.paramsCache;
     }
+
+    private Map<String, Object> getPostParamsCache() {
+        if (this.paramsCache == null) {
+            synchronized (this) {
+                if (this.paramsCache == null) {
+                    try {
+                        this.paramsCache = new HashMap<>();
+                        ByteBuf content = this.request.content();
+                        String postString = content.toString(StandardCharsets.UTF_8);
+                        this.paramsCache.put(POST_STRING_KEY, postString);
+                        JSONObject postJsonObject = JSONObject.parseObject(postString);
+                        this.paramsCache.put(POST_JSON_OBJECT_KEY, postJsonObject);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    return paramsCache;
+                }
+            }
+        }
+        return this.paramsCache;
+    }
+
 
     public boolean isGet() {
         return this.methodType == HttpMethod.GET;
