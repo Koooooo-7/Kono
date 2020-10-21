@@ -21,5 +21,22 @@ public class ControllerClassLoader {
         }
         return classes;
     }
+
+    public static ClassLoader getDefaultClassLoader() {
+        ClassLoader cl = null;
+        try {
+            cl = Thread.currentThread().getContextClassLoader();
+            if (cl == null) {
+                cl = ApplicationContext.class.getClassLoader();
+                if (cl == null) {
+                    cl = ClassLoader.getSystemClassLoader();
+                }
+            }
+        } catch (Throwable ex) {
+            // uh, can not find any classloader to load banner...
+        }
+        return cl;
+    }
+
 }
 

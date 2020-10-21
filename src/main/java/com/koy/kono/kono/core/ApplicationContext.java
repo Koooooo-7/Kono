@@ -4,9 +4,14 @@ import com.koy.kono.kono.route.DispatcherHandler;
 import com.koy.kono.kono.route.RouteParser;
 import io.netty.util.internal.StringUtil;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +41,12 @@ public class ApplicationContext {
         controllerFactory = new ControllerFactory(metaControllers);
         RouteParser routeParser = new RouteParser(controllerFactory);
         dispatcherHandler = new DispatcherHandler(routeParser, this);
+        printBanner();
+    }
+
+    private void printBanner() {
+        ApplicationBannerSprinter bannerSprinter = new ApplicationBannerSprinter(configuration);
+        bannerSprinter.print();
     }
 
     public ControllerFactory getControllerFactory() {
@@ -126,5 +137,69 @@ public class ApplicationContext {
 
     public void removeRequestContext() {
         requestContext.remove();
+    }
+
+
+    private static class ApplicationBannerSprinter {
+
+        public static final String BANNER_LOCATION_FILE = "banner.kono";
+        private Configuration configuration;
+
+        public ApplicationBannerSprinter(Configuration configuration) {
+            this.configuration = configuration;
+        }
+
+        public void print() {
+            // TODO: whether print banner
+            Banner banner = getBanner();
+            banner.printBanner();
+        }
+
+        private Banner getBanner() {
+            ClassLoader classLoader = ControllerClassLoader.getDefaultClassLoader();
+            return new Banner(BANNER_LOCATION_FILE, classLoader, System.out);
+        }
+
+    }
+
+    private static class Banner {
+
+        private String resource;
+        private ClassLoader classLoader;
+        private PrintStream printStream;
+
+        public Banner(String resource, ClassLoader classLoader, PrintStream printStream) {
+            this.resource = resource;
+            this.classLoader = classLoader;
+            this.printStream = printStream;
+        }
+
+        private void printBanner() {
+            try {
+                InputStream resourceAsStream = classLoader.getResourceAsStream(resource);
+                String bannerString = copyToString(resourceAsStream);
+                printStream.print(bannerString);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private static String copyToString(InputStream in) throws IOException {
+
+        final int BUFFER_SIZE = 4096;
+
+        if (in == null) {
+            return "No banner can be found :(";
+        }
+
+        StringBuilder out = new StringBuilder(BUFFER_SIZE);
+        InputStreamReader reader = new InputStreamReader(in, StandardCharsets.UTF_8);
+        char[] buffer = new char[BUFFER_SIZE];
+        int charsRead;
+        while ((charsRead = reader.read(buffer)) != -1) {
+            out.append(buffer, 0, charsRead);
+        }
+        return out.toString();
     }
 }
