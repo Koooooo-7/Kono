@@ -12,10 +12,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -82,7 +79,7 @@ public class ApplicationContext {
 
             List<Method> controllerMethod = new ArrayList<>();
             for (Method m : methods) {
-                // controller own public method
+                // controller has public and void method as router
                 if (isControllerMethod(m) && Modifier.isPublic(m.getModifiers())) {
                     controllerMethod.add(m);
                 }
@@ -101,11 +98,16 @@ public class ApplicationContext {
             return baseRouter;
         }
 
-        String customRouter = routers.get(baseRouter);
+        String customRouter = routers.entrySet().stream().filter(e -> {
+            String defaultBaseRouter = e.getKey();
+            return baseRouter.equalsIgnoreCase(defaultBaseRouter);
+        }).map(Map.Entry::getValue).findFirst().orElseGet(()->"");
+
         if (StringUtil.isNullOrEmpty(customRouter)) {
-            return customRouter;
+            return baseRouter;
         }
-        return baseRouter;
+
+        return customRouter;
     }
 
     private void doWrapperMetaController(List<Method> controllerMethod, Object instance, String baseRouter) {

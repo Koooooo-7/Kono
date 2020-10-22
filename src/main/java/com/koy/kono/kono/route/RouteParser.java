@@ -8,6 +8,7 @@ import com.koy.kono.kono.core.annotation.KonoMethod;
 import com.koy.kono.kono.enums.RouterMatch;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.util.internal.StringUtil;
 
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -26,11 +27,23 @@ public class RouteParser implements Dispatcher {
         int methodIndex = url.lastIndexOf('/');
         int paramsIndex = url.indexOf('?');
         String controllerRoute = url.substring(0, methodIndex);
+
+        // when the controller is root router, if the router is //user, it's illegal
+        if ("/".equalsIgnoreCase(controllerRoute)){
+            return new Dispatch(RouterMatch.NOT_FOUND, channelHandlerContext, handler, null, null);
+        }
+
+        // TODO: how about redirect to the /index method by default, making /user as controller. thoughts?
+        // when the controller is root router, only have the method in the url and controller is empty (/user)
+        if (StringUtil.isNullOrEmpty(controllerRoute)) {
+            controllerRoute = "/";
+        }
+
         String method = url.substring(methodIndex + 1, paramsIndex == -1 ? url.length() : paramsIndex);
 
         Router router = routers.get(controllerRoute.toLowerCase());
         if (Objects.isNull(router)) {
-            // TODO redirect to miss controller
+            // TODO: redirect to miss controller
             return new Dispatch(RouterMatch.NOT_FOUND, channelHandlerContext, handler, null, null);
         }
         Router matchRouter = router.getMatchRouter(method);
@@ -50,7 +63,7 @@ public class RouteParser implements Dispatcher {
         }
     }
 
-    private class Router {
+    private static class Router {
 
         private String baseRoute;
         private MetaController metaController;
