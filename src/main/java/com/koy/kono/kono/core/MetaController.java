@@ -1,7 +1,5 @@
 package com.koy.kono.kono.core;
 
-import io.netty.handler.codec.http.HttpMethod;
-
 import java.lang.reflect.Method;
 import java.util.List;
 

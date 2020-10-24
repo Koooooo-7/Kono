@@ -3,7 +3,6 @@ package com.koy.kono.kono.route;
 import com.koy.kono.kono.core.ControllerFactory;
 import com.koy.kono.kono.core.RequestContext;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.http.FullHttpRequest;
 
 /**
  * @author Koy  https://github.com/Koooooo-7
