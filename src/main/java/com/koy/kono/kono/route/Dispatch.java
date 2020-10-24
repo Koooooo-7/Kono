@@ -14,8 +14,6 @@ import java.lang.reflect.Method;
  * @Description
  */
 
-@Data
-@AllArgsConstructor
 public class Dispatch {
 
     private RouterMatch routerMatch;
@@ -24,4 +22,51 @@ public class Dispatch {
     private MetaController targetController;
     private Method targetMethod;
 
+    public Dispatch(RouterMatch routerMatch, ChannelHandlerContext channelHandlerContext, ControllerFactory handler, MetaController targetController, Method targetMethod) {
+        this.routerMatch = routerMatch;
+        this.channelHandlerContext = channelHandlerContext;
+        this.handler = handler;
+        this.targetController = targetController;
+        this.targetMethod = targetMethod;
+    }
+
+    public RouterMatch getRouterMatch() {
+        return routerMatch;
+    }
+
+    public void setRouterMatch(RouterMatch routerMatch) {
+        this.routerMatch = routerMatch;
+    }
+
+    public ChannelHandlerContext getChannelHandlerContext() {
+        return channelHandlerContext;
+    }
+
+    public void setChannelHandlerContext(ChannelHandlerContext channelHandlerContext) {
+        this.channelHandlerContext = channelHandlerContext;
+    }
+
+    public ControllerFactory getHandler() {
+        return handler;
+    }
+
+    public void setHandler(ControllerFactory handler) {
+        this.handler = handler;
+    }
+
+    public MetaController getTargetController() {
+        return targetController;
+    }
+
+    public void setTargetController(MetaController targetController) {
+        this.targetController = targetController;
+    }
+
+    public Method getTargetMethod() {
+        return targetMethod;
+    }
+
+    public void setTargetMethod(Method targetMethod) {
+        this.targetMethod = targetMethod;
+    }
 }
