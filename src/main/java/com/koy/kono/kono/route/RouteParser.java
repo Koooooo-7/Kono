@@ -1,19 +1,19 @@
 package com.koy.kono.kono.route;
 
-import com.koy.kono.kono.core.BaseController;
 import com.koy.kono.kono.core.ControllerFactory;
 import com.koy.kono.kono.core.MetaController;
 import com.koy.kono.kono.core.RequestContext;
-import com.koy.kono.kono.core.annotation.KonoMethod;
 import com.koy.kono.kono.enums.RouterMatch;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.util.internal.StringUtil;
 
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 public class RouteParser implements Dispatcher {
 
@@ -61,14 +61,15 @@ public class RouteParser implements Dispatcher {
             this.matchedMethod = matchedMethod;
         }
 
-        public Router getMatchRouter(final String methodName) {
-            Method matchMethod = getMatchMethod(methodName);
-            if ("miss".equalsIgnoreCase(matchMethod.getName()) && Objects.nonNull(matchMethod.getAnnotation(KonoMethod.class))) {
+        public Router getMatchRouter(final String requestType, final String methodName) {
+            MetaController.MetaMethod matchMetaMethod = getMatchMetaMethod(requestType, methodName);
+
+            if (Objects.isNull(matchMetaMethod) || !matchMetaMethod.isAccess(requestType)) {
                 routerMatch = RouterMatch.NOT_FOUND;
-                matchedMethod = matchMethod;
                 return this;
             }
 
+            Method matchMethod = matchMetaMethod.getMethod();
             routerMatch = RouterMatch.FOUND;
             matchedMethod = matchMethod;
             return this;
@@ -86,19 +87,27 @@ public class RouteParser implements Dispatcher {
             return metaController;
         }
 
-        private Method getMatchMethod(String methodName) {
-            return metaController.getMethods()
+        private MetaController.MetaMethod getMatchMetaMethod(String requestType, String methodName) {
+
+            Map<Boolean, List<MetaController.MetaMethod>> matchedMethodMap = metaController.getMethods()
                     .parallelStream()
-                    .filter(method -> methodName.equalsIgnoreCase(method.getName()))
-                    .findFirst()
-                    .orElseGet(() -> {
-                        try {
-                            // TODO: abstract method can not be invoked
-                            return BaseController.class.getMethod("miss");
-                        } catch (NoSuchMethodException ignore) {
-                        }
-                        return null;
-                    });
+                    .filter(metaMethod -> (requestType + methodName).equalsIgnoreCase(metaMethod.getMethod().getName())
+                            || methodName.equalsIgnoreCase(metaMethod.getMethod().getName()))
+                    .collect(Collectors.partitioningBy(e -> e.isMatchedAccess(requestType)));
+
+            // no match
+            if (matchedMethodMap.isEmpty()) {
+                return null;
+            }
+
+            // match the method not request type
+            if (matchedMethodMap.get(Boolean.TRUE).isEmpty()) {
+                return matchedMethodMap.get(Boolean.FALSE).isEmpty() ? null : matchedMethodMap.get(Boolean.FALSE).get(0);
+            }
+
+            // full match
+            return matchedMethodMap.get(Boolean.TRUE).isEmpty() ? null : matchedMethodMap.get(Boolean.TRUE).get(0);
+
         }
 
     }
@@ -107,6 +116,8 @@ public class RouteParser implements Dispatcher {
     private Router findRouter(FullHttpRequest fullHttpRequest) {
 
         String url = fullHttpRequest.uri();
+        String requestType = fullHttpRequest.method().name();
+
         int methodIndex = url.lastIndexOf('/');
         int paramsIndex = url.indexOf('?');
         String controllerRoute = url.substring(0, methodIndex);
@@ -129,8 +140,7 @@ public class RouteParser implements Dispatcher {
         }
         String method = url.substring(methodIndex + 1, paramsIndex == -1 ? url.length() : paramsIndex);
 
-        // TODO: getMethod, postMethod
-        return router.getMatchRouter(method);
+        return router.getMatchRouter(requestType, method);
     }
 
     private void addRouter(String baseRouter, Router router) {

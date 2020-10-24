@@ -42,11 +42,12 @@ public class ControllerFactory {
             String baseRouter = "/" + controllerName.replaceFirst("(?i)Controller", "");
             baseRouter = getBaseRouterOnConfiguration(baseRouter, configuration);
 
-            List<Method> controllerMethod = new ArrayList<>();
+            List<MetaController.MetaMethod> controllerMethod = new ArrayList<>();
             for (Method m : methods) {
                 // controller has public and void method as router
-                if (isControllerMethod(m) && Modifier.isPublic(m.getModifiers())) {
-                    controllerMethod.add(m);
+                if (isControllerRouteMethod(m)) {
+                    MetaController.MetaMethod metaMethod = new MetaController.MetaMethod(m, MetaController.MetaMethod.getMethodAccess(m.getName()));
+                    controllerMethod.add(metaMethod);
                 }
             }
 
@@ -75,16 +76,18 @@ public class ControllerFactory {
         return customRouter;
     }
 
-    private void doWrapperMetaController(List<Method> controllerMethod, Object instance, String baseRouter) {
+    private void doWrapperMetaController(List<MetaController.MetaMethod> controllerMethod, Object instance, String baseRouter) {
         MetaController metaController = new MetaController(instance, controllerMethod, baseRouter);
         addMetaController(baseRouter, metaController);
     }
 
-    private boolean isControllerMethod(Method m) {
+    private boolean isControllerRouteMethod(Method m) {
         boolean is = false;
         try {
             is = m.getDeclaringClass().getSuperclass().isAssignableFrom(BaseController.class)
-                    && "void".equals(m.getReturnType().getName());
+                    && Modifier.isPublic(m.getModifiers())
+                    && "void".equals(m.getReturnType().getName())
+                    && m.getParameterCount() == 0;
         } catch (Exception ignore) {
         }
         return is;
