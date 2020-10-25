@@ -13,11 +13,11 @@
 
 ### ✨ Features
 
-- Automatically route.
+- Automatically route
 
   It will automatically generate the route based on the controller and methods.
 
-- Dynamical request support.
+- Dynamical request support
 
   You can use one method to support both `GET` and `POST` requests. 
 
@@ -25,7 +25,7 @@
 
   There is more flexible way to acquire request parameters, and support parameter preprocessing. 
 
-- Streaming responses.
+- Streaming responses
 
   Using the builder way to return your responses and build your own fully response.
 
@@ -46,7 +46,11 @@ public class IndexController extends BaseController {
 
     // both support the GET and POST request to /index/user
     public void user() {
-        Optional<String> user = this.getRequest().get("user");
+        // get the specific request parameter
+        Optional<String> user = this.getRequest().get("user", (parameter) -> {
+            // you could do some thing before you get the parameter, such as set a filter;
+            return parameter;
+        });
         Map<String, Object> map = new HashMap<>();
         map.put("Koy", "Hello World!");
         map.put(user.orElseGet(() -> "Anonymous"), "Kono!");
