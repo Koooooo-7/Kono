@@ -15,7 +15,7 @@ import java.util.function.Function;
 
 /**
  * @author Koy  https://github.com/Koooooo-7
- * @Description
+ * @Description The request context is occurred in each request happens and removed when it return back.
  */
 
 public class RequestContext {

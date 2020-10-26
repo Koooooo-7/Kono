@@ -4,7 +4,7 @@ import com.koy.kono.kono.core.annotation.KonoMethod;
 
 /**
  * @author Koy  https://github.com/Koooooo-7
- * @Description
+ * @Description The base controller that which handle the request context , hence other controllers can get it.
  */
 
 public abstract class BaseController {

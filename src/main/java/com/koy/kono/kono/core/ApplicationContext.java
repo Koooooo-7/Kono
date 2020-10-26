@@ -12,7 +12,7 @@ import java.nio.charset.StandardCharsets;
 
 /**
  * @author Koy  https://github.com/Koooooo-7
- * @Description
+ * @Description The whole application context, which as the container of oll the framework happens.
  */
 
 public class ApplicationContext {

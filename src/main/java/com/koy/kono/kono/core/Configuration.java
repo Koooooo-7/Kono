@@ -5,6 +5,11 @@ import com.koy.kono.kono.enums.Protocol;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author Koy  https://github.com/Koooooo-7
+ * @Description The configuration files mapping class.
+ */
+
 public class Configuration {
 
     private Integer port = 9001;

@@ -5,7 +5,7 @@ import java.util.List;
 
 /**
  * @author Koy  https://github.com/Koooooo-7
- * @Description
+ * @Description The meta info of a controller.
  */
 
 public class MetaController {
