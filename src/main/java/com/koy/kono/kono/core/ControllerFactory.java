@@ -39,7 +39,10 @@ public class ControllerFactory {
 //                    name.replace(configuration.getControllerLocation(), "")
 //                            .replaceFirst("(?i)Controller", "") : controllerName;
 
-            String baseRouter = "/" + controllerName.replaceFirst("(?i)Controller", "");
+            // if the controllerName return '/name', should remove the / first.
+            String baseRouter = "/" + controllerName
+                    .replaceFirst("/", "")
+                    .replaceFirst("(?i)Controller", "");
             baseRouter = getBaseRouterOnConfiguration(baseRouter, configuration);
 
             List<MetaController.MetaMethod> controllerMethod = new ArrayList<>();
