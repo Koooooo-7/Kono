@@ -4,7 +4,6 @@ package com.koy.kono.kono.interceptor;
 import com.koy.kono.kono.core.ControllerFactory;
 import com.koy.kono.kono.core.RequestContext;
 import io.netty.handler.codec.http.FullHttpResponse;
-import javafx.scene.chart.ScatterChart;
 
 import java.util.LinkedList;
 import java.util.Objects;
