@@ -1,13 +1,23 @@
 package com.koy.kono.kono.core;
 
+import com.koy.kono.kono.interceptor.IInterceptor;
+import com.koy.kono.kono.interceptor.InterceptorExecutor;
+import com.koy.kono.kono.route.Dispatcher;
 import com.koy.kono.kono.route.DispatcherHandler;
+import com.koy.kono.kono.route.DispatcherInvocationHandler;
 import com.koy.kono.kono.route.RouteParser;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.FullHttpResponse;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.lang.reflect.Proxy;
 import java.nio.charset.StandardCharsets;
+import java.util.LinkedList;
+import java.util.function.Supplier;
 
 
 /**
@@ -18,6 +28,7 @@ import java.nio.charset.StandardCharsets;
 public class ApplicationContext {
 
     private static final ThreadLocal<RequestContext> requestContext = new ThreadLocal<>();
+    Supplier<RequestContext.Builder> requestContextSupplier = RequestContext.Builder::new;
 
     private Configuration configuration;
     private DispatcherHandler dispatcherHandler;
@@ -40,7 +51,32 @@ public class ApplicationContext {
         bannerSprinter.print();
     }
 
-    public ControllerFactory getControllerFactory() {
+    public void in(ChannelHandlerContext channelHandlerContext, FullHttpRequest fullHttpRequest) {
+
+        RequestContext requestContext = requestContextSupplier.get()
+                .setRequest(fullHttpRequest, this)
+                .setRequestUrl(fullHttpRequest.uri())
+                .setRequestMethodType(fullHttpRequest.method())
+                .build();
+
+        this.setConfigurationRequestContext(requestContext);
+
+        // TODO: pre filters interceptors
+
+        Dispatcher dispatcherHandler = this.getDispatcherHandler(InterceptorExecutor.PRE.addInterceptor(null));
+        ControllerFactory handlerFactory = this.getControllerFactory();
+        dispatcherHandler.dispatch(requestContext, channelHandlerContext, handlerFactory);
+        this.removeRequestContext();
+    }
+
+    public void out(FullHttpResponse response) {
+        // TODO: post filters interceptors
+        Dispatcher dispatcherHandler = this.getDispatcherHandler(InterceptorExecutor.POST.addInterceptor(null));
+        dispatcherHandler.dispatch(response);
+        this.removeRequestContext();
+    }
+
+    private ControllerFactory getControllerFactory() {
         return controllerFactory;
     }
 
@@ -48,7 +84,13 @@ public class ApplicationContext {
         return dispatcherHandler;
     }
 
-    public void setConfigurationRequestContext(RequestContext ctx) {
+    private Dispatcher getDispatcherHandler(InterceptorExecutor executor) {
+        return (Dispatcher) Proxy.newProxyInstance(ControllerClassLoader.getDefaultClassLoader()
+                , new Class[]{Dispatcher.class}
+                , new DispatcherInvocationHandler(executor, this.dispatcherHandler));
+    }
+
+    private void setConfigurationRequestContext(RequestContext ctx) {
         requestContext.set(ctx);
     }
 

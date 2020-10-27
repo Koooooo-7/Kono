@@ -29,10 +29,10 @@ public class DispatcherHandler implements Dispatcher {
     }
 
     @Override
-    public Dispatch dispatch(RequestContext ctx, ChannelHandlerContext channelHandlerContext, ControllerFactory handler) {
+    public Dispatch dispatch(RequestContext ctx, ChannelHandlerContext channelHandlerContext, ControllerFactory handlerFactory) {
         this.channelHandlerContext = channelHandlerContext;
 
-        Dispatch dispatch = routeParser.dispatch(ctx, channelHandlerContext, handler);
+        Dispatch dispatch = routeParser.dispatch(ctx, channelHandlerContext, handlerFactory);
         RouterMatch routerMatch = dispatch.getRouterMatch();
         if (RouterMatch.NOT_FOUND == routerMatch) {
             // TODO redirect to miss controller
@@ -44,7 +44,7 @@ public class DispatcherHandler implements Dispatcher {
         MetaController targetController = dispatch.getTargetController();
         injectionRequestContext(ctx, targetController);
 
-        handler.handle(targetController, dispatch.getTargetMethod());
+        handlerFactory.handle(targetController, dispatch.getTargetMethod());
         // finished
         return null;
     }
@@ -60,6 +60,7 @@ public class DispatcherHandler implements Dispatcher {
         }
     }
 
+    @Override
     public void dispatch(FullHttpResponse response) {
         channelHandlerContext.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
         this.applicationContext.removeRequestContext();

@@ -2,9 +2,7 @@ package com.koy.kono.kono.core;
 
 import io.netty.util.internal.StringUtil;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
+import java.lang.reflect.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -13,10 +11,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Koy  https://github.com/Koooooo-7
- * @Description Control all the meta info of controllers.
+ * @Description Control all the meta info of controllers as a handler.
  */
 
-public class ControllerFactory {
+public class ControllerFactory implements IController {
     private static final ConcurrentHashMap<String, MetaController> controllers = new ConcurrentHashMap<>();
 
     public void loadControllers(Configuration configuration) {
@@ -104,6 +102,7 @@ public class ControllerFactory {
         return controllers;
     }
 
+    @Override
     public void handle(MetaController handler, Method method) {
         Object target = handler.getInstance();
         try {

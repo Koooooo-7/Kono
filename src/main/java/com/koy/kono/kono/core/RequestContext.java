@@ -240,7 +240,7 @@ public class RequestContext {
         }
 
         public void json() {
-            this.requestContext.applicationContext.getDispatcherHandler().dispatch(response);
+            this.requestContext.applicationContext.out(response);
         }
 
 

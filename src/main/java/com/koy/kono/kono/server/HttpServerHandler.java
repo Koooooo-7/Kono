@@ -3,6 +3,8 @@ package com.koy.kono.kono.server;
 import com.koy.kono.kono.core.ApplicationContext;
 import com.koy.kono.kono.core.ControllerFactory;
 import com.koy.kono.kono.core.RequestContext;
+import com.koy.kono.kono.route.Dispatch;
+import com.koy.kono.kono.route.Dispatcher;
 import com.koy.kono.kono.route.DispatcherHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -17,8 +19,6 @@ import java.util.function.Supplier;
 
 public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
-    Supplier<RequestContext.Builder> requestContextSupplier = RequestContext.Builder::new;
-
     private ApplicationContext applicationContext;
 
     public HttpServerHandler(ApplicationContext applicationContext) {
@@ -27,17 +27,8 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
 
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, FullHttpRequest fullHttpRequest) {
 
-        RequestContext requestContext = requestContextSupplier.get()
-                .setRequest(fullHttpRequest, applicationContext)
-                .setRequestUrl(fullHttpRequest.uri())
-                .setRequestMethodType(fullHttpRequest.method())
-                .build();
 
-        applicationContext.setConfigurationRequestContext(requestContext);
-        DispatcherHandler dispatcherHandler = applicationContext.getDispatcherHandler();
-        ControllerFactory handler = applicationContext.getControllerFactory();
-        dispatcherHandler.dispatch(requestContext, channelHandlerContext, handler);
-        applicationContext.removeRequestContext();
+        applicationContext.in(channelHandlerContext, fullHttpRequest);
 
     }
 
