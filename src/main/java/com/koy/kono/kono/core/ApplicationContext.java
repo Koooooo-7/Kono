@@ -84,6 +84,7 @@ public class ApplicationContext {
         return dispatcherHandler;
     }
 
+    // return the proxy object, which keep the InterceptorExecutor.
     private Dispatcher getDispatcherHandler(InterceptorExecutor executor) {
         return (Dispatcher) Proxy.newProxyInstance(ControllerClassLoader.getDefaultClassLoader()
                 , new Class[]{Dispatcher.class}

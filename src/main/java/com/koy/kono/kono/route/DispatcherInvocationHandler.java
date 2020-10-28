@@ -7,7 +7,7 @@ import java.lang.reflect.Method;
 
 /**
  * @author Koy  https://github.com/Koooooo-7
- * @Description
+ * @Description the invocation with will solve the interceptors on the proxy object invoked.
  */
 
 public class DispatcherInvocationHandler implements InvocationHandler {
@@ -16,7 +16,7 @@ public class DispatcherInvocationHandler implements InvocationHandler {
     private Dispatcher handler;
 
     public DispatcherInvocationHandler(InterceptorExecutor executor, Dispatcher handler) {
-        this. executor= executor;
+        this.executor = executor;
         this.handler = handler;
     }
 

@@ -13,6 +13,6 @@ import org.jooq.SQLDialect;
 public interface Engine {
 
 
-    DSLContext engine(Configuration configuration,SQLDialect engineType);
+    DSLContext engine(Configuration configuration, SQLDialect engineType);
 
 }

@@ -9,7 +9,7 @@ import org.jooq.SQLDialect;
  * @Description
  */
 
-public class H2Engine implements  Engine {
+public class H2Engine implements Engine {
     @Override
     public DSLContext engine(Configuration configuration, SQLDialect engineType) {
         return null;

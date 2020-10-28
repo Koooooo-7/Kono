@@ -43,7 +43,7 @@ public enum InterceptorExecutor {
 
     public <T> boolean execute(FullHttpRequest request, T target, Function<? super IInterceptor, ? extends Predicate<T>> mapper) {
         // TODO: change url to Router
-        List<IInterceptor> matchedInterceptors = getMatchedInterceptors((FullHttpRequest) request);
+        List<IInterceptor> matchedInterceptors = getMatchedInterceptors(request);
         LinkedList<Predicate<T>> predicates = matchedInterceptors.stream().map(mapper).collect(Collectors.toCollection(LinkedList::new));
         Predicate<T> interceptorPredicateChain = getPredicateChain(predicates, 0);
         if (this == POST) {

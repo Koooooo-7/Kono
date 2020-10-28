@@ -30,7 +30,7 @@ public class MetaController {
 
     public static class MetaMethod {
         enum MethodAccess {
-            ALL, GET, POST;
+            ALL, GET, POST
         }
 
         private Method method;

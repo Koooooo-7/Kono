@@ -7,5 +7,5 @@ package com.koy.kono.kono.enums;
 
 public enum RouterMatch {
     NOT_FOUND,
-    FOUND;
+    FOUND
 }
