@@ -14,7 +14,7 @@ import java.lang.reflect.Method;
 
 /**
  * @author Koy  https://github.com/Koooooo-7
- * @Description
+ * @Description the dispatcher handler will dispatch the request and the response.
  */
 
 public class DispatcherHandler implements Dispatcher {

@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 /**
  * @author Koy  https://github.com/Koooooo-7
- * @Description
+ * @Description the interceptor executor, which will exec the interceptors chain.
  */
 
 public enum InterceptorExecutor {

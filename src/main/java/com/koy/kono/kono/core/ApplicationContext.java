@@ -20,7 +20,7 @@ import java.util.function.Supplier;
 
 /**
  * @author Koy  https://github.com/Koooooo-7
- * @Description The whole application context, which as the container of oll the framework happens.
+ * @Description The whole application context, which as the container of all the framework happens.
  */
 
 public class ApplicationContext {

@@ -15,6 +15,11 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+/**
+ * @author Koy  https://github.com/Koooooo-7
+ * @Description The route parser which parse the route and get the target Dispatch.
+ */
+
 public class RouteParser implements Dispatcher {
 
     private static final ConcurrentHashMap<String, Router> routers = new ConcurrentHashMap<>();
