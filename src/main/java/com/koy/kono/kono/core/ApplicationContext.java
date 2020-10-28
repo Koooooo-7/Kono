@@ -1,6 +1,5 @@
 package com.koy.kono.kono.core;
 
-import com.koy.kono.kono.interceptor.IInterceptor;
 import com.koy.kono.kono.interceptor.InterceptorExecutor;
 import com.koy.kono.kono.route.Dispatcher;
 import com.koy.kono.kono.route.DispatcherHandler;
@@ -16,7 +15,6 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.lang.reflect.Proxy;
 import java.nio.charset.StandardCharsets;
-import java.util.LinkedList;
 import java.util.function.Supplier;
 
 
@@ -61,17 +59,19 @@ public class ApplicationContext {
 
         this.setConfigurationRequestContext(requestContext);
 
-        // TODO: pre filters interceptors
-
-        Dispatcher dispatcherHandler = this.getDispatcherHandler(InterceptorExecutor.PRE.addInterceptor(null));
+// Test
+//        LinkedList<IInterceptor> interceptors = new LinkedList<>();
+//        Collections.addAll(interceptors,new Interceptor0(), new Interceptor1(), new Interceptor2());
+        // TODO: load Interceptors
+        InterceptorExecutor.PRE.setRegisterInterceptors(null);
+        Dispatcher dispatcherHandler = this.getDispatcherHandler(InterceptorExecutor.PRE);
         ControllerFactory handlerFactory = this.getControllerFactory();
         dispatcherHandler.dispatch(requestContext, channelHandlerContext, handlerFactory);
         this.removeRequestContext();
     }
 
     public void out(FullHttpResponse response) {
-        // TODO: post filters interceptors
-        Dispatcher dispatcherHandler = this.getDispatcherHandler(InterceptorExecutor.POST.addInterceptor(null));
+        Dispatcher dispatcherHandler = this.getDispatcherHandler(InterceptorExecutor.POST);
         dispatcherHandler.dispatch(response);
         this.removeRequestContext();
     }

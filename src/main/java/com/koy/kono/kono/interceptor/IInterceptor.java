@@ -1,8 +1,9 @@
 package com.koy.kono.kono.interceptor;
 
-import com.koy.kono.kono.core.ControllerFactory;
 import com.koy.kono.kono.core.RequestContext;
 import io.netty.handler.codec.http.FullHttpResponse;
+
+import java.util.function.Predicate;
 
 /**
  * @author Koy  https://github.com/Koooooo-7
@@ -11,10 +12,15 @@ import io.netty.handler.codec.http.FullHttpResponse;
 
 public interface IInterceptor {
 
-    default void preHandle(RequestContext requestContext, ControllerFactory controllerFactory) {
+    default Predicate<RequestContext> preHandle() {
+        return req -> true;
     }
 
 
-    default void postHandle(FullHttpResponse response) {
+    default Predicate<FullHttpResponse> postHandle() {
+        return rep -> true;
     }
+
+    boolean isMatchPathPatterns(String url);
+
 }
