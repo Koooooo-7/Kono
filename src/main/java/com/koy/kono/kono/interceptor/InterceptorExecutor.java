@@ -4,9 +4,7 @@ import com.koy.kono.kono.core.RequestContext;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.FullHttpResponse;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -20,8 +18,9 @@ public enum InterceptorExecutor {
 
     PRE, POST;
 
-    private LinkedList<IInterceptor> registerInterceptors;
+    private LinkedList<IInterceptor> registerInterceptors = new LinkedList<>();
 
+    // TODO: the life circle should be more, it will retain in all application life, not just thread
     private static final ThreadLocal<List<IInterceptor>> matchedIInterceptorsCache = new ThreadLocal<>();
 
     public boolean doInterceptor(Object[] args) {
@@ -44,6 +43,9 @@ public enum InterceptorExecutor {
     public <T> boolean execute(FullHttpRequest request, T target, Function<? super IInterceptor, ? extends Predicate<T>> mapper) {
         // TODO: change url to Router
         List<IInterceptor> matchedInterceptors = getMatchedInterceptors(request);
+        if (matchedInterceptors.isEmpty()) {
+            return true;
+        }
         LinkedList<Predicate<T>> predicates = matchedInterceptors.stream().map(mapper).collect(Collectors.toCollection(LinkedList::new));
         Predicate<T> interceptorPredicateChain = getPredicateChain(predicates, 0);
         if (this == POST) {
@@ -52,6 +54,7 @@ public enum InterceptorExecutor {
         return interceptorPredicateChain.test(target);
     }
 
+    // TODO: change to reduce
     // translate list to predicate chain
     public <T> Predicate<T> getPredicateChain(LinkedList<Predicate<T>> interceptors, int index) {
         if (index > interceptors.size() - 1) {
@@ -68,6 +71,7 @@ public enum InterceptorExecutor {
             String uri = request.uri();
             List<IInterceptor> matchedInterceptors = this.registerInterceptors.stream()
                     .filter(interceptor -> interceptor.isMatchPathPatterns(uri))
+                    .sorted(Comparator.comparingInt(IInterceptor::order))
                     .collect(Collectors.toList());
             matchedIInterceptorsCache.set(matchedInterceptors);
         }
@@ -75,8 +79,8 @@ public enum InterceptorExecutor {
     }
 
     // register all interceptors on pre
-    public void setRegisterInterceptors(LinkedList<IInterceptor> interceptors) {
-        this.registerInterceptors = interceptors;
+    public void addRegisterInterceptors(IInterceptor interceptor) {
+        this.registerInterceptors.add(interceptor);
     }
 
     // register interceptors on pre, so get from it also

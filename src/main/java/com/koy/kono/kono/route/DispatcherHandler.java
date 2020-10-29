@@ -34,7 +34,7 @@ public class DispatcherHandler implements Dispatcher {
 
         Dispatch dispatch = routeParser.dispatch(ctx, channelHandlerContext, handlerFactory);
         RouterMatch routerMatch = dispatch.getRouterMatch();
-        if (RouterMatch.NOT_FOUND == routerMatch) {
+        if (RouterMatch.FOUND != routerMatch) {
             // TODO redirect to miss controller
             dispatch(new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.NOT_FOUND));
             // finished
@@ -63,6 +63,5 @@ public class DispatcherHandler implements Dispatcher {
     @Override
     public void dispatch(FullHttpResponse response) {
         channelHandlerContext.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
-        this.applicationContext.removeRequestContext();
     }
 }

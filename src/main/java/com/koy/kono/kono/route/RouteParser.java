@@ -28,9 +28,9 @@ public class RouteParser implements Dispatcher {
     public Dispatch dispatch(RequestContext ctx, ChannelHandlerContext channelHandlerContext, ControllerFactory handler) {
 
         Router matchRouter = findRouter(ctx.getRequest());
-        if (matchRouter.getRouterMatch() == RouterMatch.NOT_FOUND) {
+        if (matchRouter.getRouterMatch() != RouterMatch.FOUND) {
             // TODO: redirect to miss controller
-            return new Dispatch(RouterMatch.NOT_FOUND, channelHandlerContext, handler, null, null);
+            return new Dispatch(matchRouter.getRouterMatch(), channelHandlerContext, handler, null, null);
         }
         return new Dispatch(matchRouter.getRouterMatch(), channelHandlerContext, handler, matchRouter.getMetaController(), matchRouter.getMatchedMethod());
     }
@@ -122,6 +122,11 @@ public class RouteParser implements Dispatcher {
 
         String url = fullHttpRequest.uri();
         String requestType = fullHttpRequest.method().name();
+
+        // TODO: it is only support GET/POST request right now
+        if (!"GET".equalsIgnoreCase(requestType) && !"POST".equalsIgnoreCase(requestType)) {
+            return new Router(RouterMatch.NOT_FOUND, null, null);
+        }
 
         int methodIndex = url.lastIndexOf('/');
         int paramsIndex = url.indexOf('?');

@@ -1,5 +1,6 @@
 package com.koy.kono.kono.core;
 
+import com.koy.kono.kono.interceptor.IInterceptor;
 import org.reflections.Reflections;
 
 import java.util.*;
@@ -9,9 +10,27 @@ import java.util.*;
  * @Description
  */
 
-public class ControllerClassLoader {
+public class DefaultClassLoader {
 
-    protected Set<Class<? extends BaseController>> findControllerClasses(Configuration configuration) {
+    private Configuration configuration;
+
+    public DefaultClassLoader(Configuration configuration) {
+        this.configuration = configuration;
+    }
+
+    // TODO: make ClassLoader interface
+    public Set<Class<? extends IInterceptor>> findInterceptorClasses() {
+        String packageName = configuration.getInterceptorLocation();
+        Reflections reflections = new Reflections(packageName);
+
+        Set<Class<? extends IInterceptor>> classes = reflections.getSubTypesOf(IInterceptor.class);
+        if (classes.isEmpty()) {
+            throw new IllegalStateException("no interceptor can be found under the declare interceptor location");
+        }
+        return classes;
+    }
+
+    public Set<Class<? extends BaseController>> findControllerClasses() {
         String packageName = configuration.getControllerLocation();
         Reflections reflections = new Reflections(packageName);
 
@@ -33,7 +52,7 @@ public class ControllerClassLoader {
                 }
             }
         } catch (Throwable ex) {
-            // uh, can not find any classloader to load banner...
+            // uh, can not find any classloader to load resources...
         }
         return cl;
     }

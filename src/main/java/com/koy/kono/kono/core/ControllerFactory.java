@@ -1,5 +1,6 @@
 package com.koy.kono.kono.core;
 
+import io.netty.handler.codec.http.DefaultHttpHeaders;
 import io.netty.util.internal.StringUtil;
 
 import java.lang.reflect.*;
@@ -17,9 +18,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ControllerFactory implements IController {
     private static final ConcurrentHashMap<String, MetaController> controllers = new ConcurrentHashMap<>();
 
-    public void loadControllers(Configuration configuration) {
-        ControllerClassLoader controllerClassLoader = new ControllerClassLoader();
-        Set<Class<? extends BaseController>> classes = controllerClassLoader.findControllerClasses(configuration);
+    public void loadControllers(DefaultClassLoader classLoader, Configuration configuration) {
+        Set<Class<? extends BaseController>> classes = classLoader.findControllerClasses();
 
         for (Class<?> clz : classes) {
             this.wrapperMetaController(clz, clz.getMethods(), configuration);

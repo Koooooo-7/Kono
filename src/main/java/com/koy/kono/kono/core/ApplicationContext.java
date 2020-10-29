@@ -1,6 +1,7 @@
 package com.koy.kono.kono.core;
 
 import com.koy.kono.kono.interceptor.InterceptorExecutor;
+import com.koy.kono.kono.interceptor.InterceptorFactory;
 import com.koy.kono.kono.route.Dispatcher;
 import com.koy.kono.kono.route.DispatcherHandler;
 import com.koy.kono.kono.route.DispatcherInvocationHandler;
@@ -37,8 +38,14 @@ public class ApplicationContext {
     }
 
     public void refresh() {
+        DefaultClassLoader classLoader = new DefaultClassLoader(configuration);
+
         controllerFactory = new ControllerFactory();
-        controllerFactory.loadControllers(configuration);
+        controllerFactory.loadControllers(classLoader, configuration);
+
+        InterceptorFactory interceptorFactory = new InterceptorFactory();
+        interceptorFactory.loadInterceptors(classLoader, configuration);
+
         RouteParser routeParser = new RouteParser(controllerFactory);
         dispatcherHandler = new DispatcherHandler(routeParser, this);
         printBanner();
@@ -59,11 +66,6 @@ public class ApplicationContext {
 
         this.setConfigurationRequestContext(requestContext);
 
-// Test
-//        LinkedList<IInterceptor> interceptors = new LinkedList<>();
-//        Collections.addAll(interceptors,new Interceptor0(), new Interceptor1(), new Interceptor2());
-        // TODO: load Interceptors
-        InterceptorExecutor.PRE.setRegisterInterceptors(null);
         Dispatcher dispatcherHandler = this.getDispatcherHandler(InterceptorExecutor.PRE);
         ControllerFactory handlerFactory = this.getControllerFactory();
         dispatcherHandler.dispatch(requestContext, channelHandlerContext, handlerFactory);
@@ -86,7 +88,7 @@ public class ApplicationContext {
 
     // return the proxy object, which keep the InterceptorExecutor.
     private Dispatcher getDispatcherHandler(InterceptorExecutor executor) {
-        return (Dispatcher) Proxy.newProxyInstance(ControllerClassLoader.getDefaultClassLoader()
+        return (Dispatcher) Proxy.newProxyInstance(DefaultClassLoader.getDefaultClassLoader()
                 , new Class[]{Dispatcher.class}
                 , new DispatcherInvocationHandler(executor, this.dispatcherHandler));
     }
@@ -116,7 +118,7 @@ public class ApplicationContext {
         }
 
         private Banner getBanner() {
-            ClassLoader classLoader = ControllerClassLoader.getDefaultClassLoader();
+            ClassLoader classLoader = DefaultClassLoader.getDefaultClassLoader();
             return new Banner(BANNER_LOCATION_FILE, classLoader, System.out);
         }
 

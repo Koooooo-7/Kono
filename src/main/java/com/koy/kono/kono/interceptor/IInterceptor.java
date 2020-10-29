@@ -23,4 +23,8 @@ public interface IInterceptor {
 
     boolean isMatchPathPatterns(String url);
 
+    default int order() {
+        return 10;
+    }
+
 }

@@ -16,6 +16,7 @@ public class Configuration {
     private Protocol protocol = Protocol.HTTP;
     // TODO: multi location
     private String controllerLocation = "com.koy.kono.app.controller";
+    private String interceptorLocation = "com.koy.kono.app.interceptor";
 
     private Map<String, String> routers = new HashMap<>();
 
@@ -92,6 +93,14 @@ public class Configuration {
 
     public void setControllerLocation(String controllerLocation) {
         this.controllerLocation = controllerLocation;
+    }
+
+    public String getInterceptorLocation() {
+        return interceptorLocation;
+    }
+
+    public void setInterceptorLocation(String interceptorLocation) {
+        this.interceptorLocation = interceptorLocation;
     }
 
     public Map<String, String> getRouters() {
