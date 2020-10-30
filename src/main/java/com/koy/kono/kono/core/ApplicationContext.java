@@ -69,7 +69,6 @@ public class ApplicationContext {
         Dispatcher dispatcherHandler = this.getDispatcherHandler(InterceptorExecutor.PRE);
         ControllerFactory handlerFactory = this.getControllerFactory();
         dispatcherHandler.dispatch(requestContext, channelHandlerContext, handlerFactory);
-        this.removeRequestContext();
     }
 
     public void out(FullHttpResponse response) {
@@ -104,7 +103,7 @@ public class ApplicationContext {
 
     private static class ApplicationBannerSprinter {
 
-        public static final String BANNER_LOCATION_FILE = "banner.kono";
+        public static final String BANNER_LOCATION = "banner.kono";
         private Configuration configuration;
 
         public ApplicationBannerSprinter(Configuration configuration) {
@@ -119,7 +118,7 @@ public class ApplicationContext {
 
         private Banner getBanner() {
             ClassLoader classLoader = DefaultClassLoader.getDefaultClassLoader();
-            return new Banner(BANNER_LOCATION_FILE, classLoader, System.out);
+            return new Banner(BANNER_LOCATION, classLoader, System.out);
         }
 
     }

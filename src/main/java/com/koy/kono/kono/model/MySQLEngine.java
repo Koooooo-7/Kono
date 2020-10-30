@@ -23,7 +23,7 @@ public class MySQLEngine implements Engine {
         DSLContext engine = null;
         try {
             Configuration.DataSource dataSource = configuration.getDataSource();
-            // if there has the configuration for data source
+            // whether there has the configuration for data source
             if (!isRegisterDataSource(dataSource)) {
                 return null;
             }

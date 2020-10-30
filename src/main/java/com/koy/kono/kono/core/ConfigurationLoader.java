@@ -10,7 +10,7 @@ import java.io.*;
  */
 
 public class ConfigurationLoader {
-    public static final String CONFIG_FILE_NAME = "/configuration.yml";
+    public static final String CONFIG_FILE_LOCATION = "/configuration.yml";
 
     public Configuration configuration() {
         Configuration configuration = new Configuration();
@@ -25,7 +25,7 @@ public class ConfigurationLoader {
     private Configuration loadResource() {
         Configuration configuration = new Configuration();
 
-        try (InputStream in = ConfigurationLoader.class.getResourceAsStream(ConfigurationLoader.CONFIG_FILE_NAME)) {
+        try (InputStream in = ConfigurationLoader.class.getResourceAsStream(ConfigurationLoader.CONFIG_FILE_LOCATION)) {
             Yaml yaml = new Yaml();
             configuration = yaml.loadAs(in, Configuration.class);
         } catch (Exception e) {

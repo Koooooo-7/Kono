@@ -22,10 +22,11 @@ import io.netty.handler.logging.LoggingHandler;
 public class KonoServer {
 
     public void run() {
-        // Get Config
+        // get config
         ConfigurationLoader configurationLoader = new ConfigurationLoader();
         Configuration configuration = configurationLoader.configuration();
         ApplicationContext applicationContext = startApplication(configuration);
+        // run container
         this.run(applicationContext, configuration);
     }
 
