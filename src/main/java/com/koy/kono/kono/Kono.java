@@ -7,8 +7,8 @@ import com.koy.kono.kono.server.KonoServer;
  * @Description
  */
 
-public class App {
-    public static void main(String[] args) {
+public class Kono {
+    public static void run(String[] args) {
         KonoServer konoServer = new KonoServer();
         konoServer.run();
     }
