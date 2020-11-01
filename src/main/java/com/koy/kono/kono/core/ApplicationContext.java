@@ -26,6 +26,7 @@ import java.util.function.Supplier;
 
 public class ApplicationContext {
 
+    // the holder for each request context.
     private static final ThreadLocal<RequestContext> requestContext = new ThreadLocal<>();
     Supplier<RequestContext.Builder> requestContextSupplier = RequestContext.Builder::new;
 
@@ -37,17 +38,24 @@ public class ApplicationContext {
         this.configuration = configuration;
     }
 
+    // load application
     public void refresh() {
+        // load configuration
         DefaultClassLoader classLoader = new DefaultClassLoader(configuration);
 
+        // load controller meta data
         controllerFactory = new ControllerFactory();
         controllerFactory.loadControllers(classLoader, configuration);
 
+        // load interceptor
         InterceptorFactory interceptorFactory = new InterceptorFactory();
         interceptorFactory.loadInterceptors(classLoader, configuration);
 
+        // initial router parser that register all the controller meta
         RouteParser routeParser = new RouteParser(controllerFactory);
+        // register route parser
         dispatcherHandler = new DispatcherHandler(routeParser, this);
+        // print banner
         printBanner();
     }
 
@@ -58,19 +66,23 @@ public class ApplicationContext {
 
     public void in(ChannelHandlerContext channelHandlerContext, FullHttpRequest fullHttpRequest) {
 
+        // generate request context
         RequestContext requestContext = requestContextSupplier.get()
                 .setRequest(fullHttpRequest, this)
                 .setRequestUrl(fullHttpRequest.uri())
                 .setRequestMethodType(fullHttpRequest.method())
                 .build();
 
+        // set to the request context holder
         this.setConfigurationRequestContext(requestContext);
 
+        // dispatch
         Dispatcher dispatcherHandler = this.getDispatcherHandler(InterceptorExecutor.PRE);
         ControllerFactory handlerFactory = this.getControllerFactory();
         dispatcherHandler.dispatch(requestContext, channelHandlerContext, handlerFactory);
     }
 
+    // return the request and remove the request context from holder
     public void out(FullHttpResponse response) {
         Dispatcher dispatcherHandler = this.getDispatcherHandler(InterceptorExecutor.POST);
         dispatcherHandler.dispatch(response);

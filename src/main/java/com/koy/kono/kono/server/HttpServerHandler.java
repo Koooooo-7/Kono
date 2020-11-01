@@ -19,6 +19,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpReque
         this.applicationContext = applicationContext;
     }
 
+    // the input event which wrapper the request to FullHttpRequest
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, FullHttpRequest fullHttpRequest) {
         // the input of request.
         applicationContext.in(channelHandlerContext, fullHttpRequest);

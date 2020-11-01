@@ -36,6 +36,7 @@ public class KonoServer {
         return applicationContext;
     }
 
+    // start socket server
     public void run(ApplicationContext applicationContext, Configuration configuration) {
 
         NioEventLoopGroup bossGroup = new NioEventLoopGroup();

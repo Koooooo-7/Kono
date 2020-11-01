@@ -46,7 +46,10 @@ public enum InterceptorExecutor {
         if (matchedInterceptors.isEmpty()) {
             return true;
         }
+
+        // get all the matched predicate list from interceptors
         LinkedList<Predicate<T>> predicates = matchedInterceptors.stream().map(mapper).collect(Collectors.toCollection(LinkedList::new));
+        // get the predicate chain
         Predicate<T> interceptorPredicateChain = getPredicateChain(predicates, 0);
         if (this == POST) {
             matchedIInterceptorsCache.remove();

@@ -49,6 +49,7 @@ public class DispatcherHandler implements Dispatcher {
         return null;
     }
 
+    // inject the request context to BaseController that make every register controller can get the request context
     private void injectionRequestContext(RequestContext ctx, MetaController targetController) {
         try {
             Object instance = targetController.getInstance();

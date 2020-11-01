@@ -9,7 +9,7 @@ import java.lang.reflect.Method;
 
 /**
  * @author Koy  https://github.com/Koooooo-7
- * @Description
+ * @Description the dispatch which will store the basic match router meta data.
  */
 
 public class Dispatch {

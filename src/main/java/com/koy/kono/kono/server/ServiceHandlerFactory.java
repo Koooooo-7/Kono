@@ -9,7 +9,7 @@ import io.netty.handler.codec.http.HttpResponseEncoder;
 
 /**
  * @author Koy  https://github.com/Koooooo-7
- * @Description
+ * @Description provide different protocol to socket channel.
  */
 
 public class ServiceHandlerFactory {

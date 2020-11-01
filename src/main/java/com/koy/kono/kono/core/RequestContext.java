@@ -42,6 +42,7 @@ public class RequestContext {
     }
 
 
+    // request context builder
     public static class Builder {
         private FullHttpRequest request;
         private ApplicationContext ctx;
@@ -72,6 +73,7 @@ public class RequestContext {
     }
 
 
+    // get the Get param by name
     public <T> Optional<T> get(String paramsName) {
         if (methodType != HttpMethod.GET) {
             return Optional.empty();
@@ -79,12 +81,14 @@ public class RequestContext {
         return Optional.ofNullable(this.getGetParam(paramsName));
     }
 
+    // get the Get param by name and set the preprocessing
     public <T> Optional<T> get(String paramsName, Function<T, T> func) {
         Optional<T> o = get(paramsName);
         o.ifPresent(func::apply);
         return o;
     }
 
+    // get all the POST param
     @SuppressWarnings("unchecked")
     public <T> Optional<T> post() {
         if (methodType != HttpMethod.POST) {
@@ -93,6 +97,7 @@ public class RequestContext {
         return Optional.ofNullable((T) this.getPostParamsCache().get(POST_JSON_OBJECT_KEY));
     }
 
+    // get the POST param by name
     public <T> Optional<T> post(String paramsName) {
         if (methodType != HttpMethod.POST) {
             return Optional.empty();
@@ -100,6 +105,7 @@ public class RequestContext {
         return Optional.ofNullable(this.getPostParam(paramsName));
     }
 
+    // get the POST params and transfer to specific object
     public <T> Optional<T> post(Class<T> clz) {
         if (methodType != HttpMethod.POST) {
             return Optional.empty();
@@ -113,6 +119,7 @@ public class RequestContext {
 
     }
 
+    // get the POST param by name and preprocessing
     public <T> Optional<T> post(String paramsName, Function<T, T> func) {
         Optional<T> o = get(paramsName);
         o.ifPresent(func::apply);
@@ -135,6 +142,7 @@ public class RequestContext {
         return (T) this.getGetParamsCache().get(paramsName);
     }
 
+    // get/generate GET params cache from the request context
     private Map<String, Object> getGetParamsCache() {
         if (this.paramsCache == null) {
             synchronized (this) {
@@ -173,6 +181,7 @@ public class RequestContext {
         return this.paramsCache;
     }
 
+    // get/generate POST params cache from the request context
     private Map<String, Object> getPostParamsCache() {
         if (this.paramsCache == null) {
             synchronized (this) {
@@ -243,7 +252,7 @@ public class RequestContext {
             this.requestContext.applicationContext.out(response);
         }
 
-
+        // response builder
         public static class Builder<T> {
             private Response<T> response;
             private HttpVersion httpVersion = HttpVersion.HTTP_1_1;
@@ -284,6 +293,7 @@ public class RequestContext {
         }
 
 
+        // data wrapper that can lazy initial the data, let the Unpooled.wrappedBuffer() get the reference first.
         static class DataWrapper<V> {
             private V data;
 

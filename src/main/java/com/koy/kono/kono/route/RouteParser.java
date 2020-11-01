@@ -92,6 +92,7 @@ public class RouteParser implements Dispatcher {
             return metaController;
         }
 
+        // find the matched meta method, the matched rules have different priority
         private MetaController.MetaMethod getMatchMetaMethod(String requestType, String methodName) {
 
             Map<Boolean, List<MetaController.MetaMethod>> matchedMethodMap = metaController.getMethods()
@@ -118,6 +119,7 @@ public class RouteParser implements Dispatcher {
     }
 
 
+    // parse the route from the request url
     private Router findRouter(FullHttpRequest fullHttpRequest) {
 
         String url = fullHttpRequest.uri();
