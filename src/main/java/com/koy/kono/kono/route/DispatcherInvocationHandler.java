@@ -1,6 +1,9 @@
 package com.koy.kono.kono.route;
 
 import com.koy.kono.kono.interceptor.InterceptorExecutor;
+import io.netty.handler.codec.http.DefaultFullHttpResponse;
+import io.netty.handler.codec.http.HttpResponseStatus;
+import io.netty.handler.codec.http.HttpVersion;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -23,7 +26,12 @@ public class DispatcherInvocationHandler implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         // TODO interceptors
-        executor.doInterceptor(args);
+        boolean interceptor = executor.doInterceptor(args);
+        // TODO: fix me
+        if (!interceptor){
+            handler.dispatch(new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_REQUEST));
+            return null;
+        }
         return method.invoke(handler, args);
     }
 }
