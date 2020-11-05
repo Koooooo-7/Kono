@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
  * @Description The route parser which parse the route and get the target Dispatch.
  */
 
-public class RouteParser implements Dispatcher {
+public class RouteParser implements IDispatcher {
 
     private static final ConcurrentHashMap<String, Router> routers = new ConcurrentHashMap<>();
 

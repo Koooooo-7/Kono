@@ -34,7 +34,7 @@ public enum InterceptorExecutor {
             case PRE:
                 return execute(((RequestContext) args[0]).getRequest(), ((RequestContext) args[0]), IInterceptor::preHandle);
             case POST:
-                return execute(null, (FullHttpResponse) args[0], IInterceptor::postHandle);
+                return execute(null, (RequestContext) args[0], IInterceptor::postHandle);
             default:
                 return false;
         }

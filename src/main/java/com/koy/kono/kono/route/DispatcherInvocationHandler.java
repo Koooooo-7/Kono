@@ -1,9 +1,7 @@
 package com.koy.kono.kono.route;
 
+import com.koy.kono.kono.core.RequestContext;
 import com.koy.kono.kono.interceptor.InterceptorExecutor;
-import io.netty.handler.codec.http.DefaultFullHttpResponse;
-import io.netty.handler.codec.http.HttpResponseStatus;
-import io.netty.handler.codec.http.HttpVersion;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -16,9 +14,9 @@ import java.lang.reflect.Method;
 public class DispatcherInvocationHandler implements InvocationHandler {
 
     private InterceptorExecutor executor;
-    private Dispatcher handler;
+    private IDispatcher handler;
 
-    public DispatcherInvocationHandler(InterceptorExecutor executor, Dispatcher handler) {
+    public DispatcherInvocationHandler(InterceptorExecutor executor, IDispatcher handler) {
         this.executor = executor;
         this.handler = handler;
     }
@@ -28,8 +26,8 @@ public class DispatcherInvocationHandler implements InvocationHandler {
         // TODO interceptors
         boolean interceptor = executor.doInterceptor(args);
         // TODO: fix me
-        if (!interceptor){
-            handler.dispatch(new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_REQUEST));
+        if (!interceptor) {
+            handler.dispatch((RequestContext) args[0], ((RequestContext) args[0]).getResponse());
             return null;
         }
         return method.invoke(handler, args);

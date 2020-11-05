@@ -26,6 +26,8 @@ public class RequestContext {
 
     private FullHttpRequest request;
 
+    private FullHttpResponse response;
+
     private ApplicationContext applicationContext;
 
     private HttpMethod methodType;
@@ -217,6 +219,22 @@ public class RequestContext {
         return new Response<T>(this, data);
     }
 
+    private void json(FullHttpResponse response) {
+        this.response = response;
+        applicationContext.out(response);
+    }
+
+    public FullHttpResponse getResponse() {
+        return response;
+    }
+
+    private void setResponse(FullHttpResponse response) {
+        this.response = response;
+    }
+
+    public <T> void setContent(ByteBuf content) {
+        this.response = response.replace(content);
+    }
 
     public <T> Response.Builder<T> sendBuilder(T data) {
         Response<T> response = new Response<T>(this, data);
@@ -249,7 +267,7 @@ public class RequestContext {
         }
 
         public void json() {
-            this.requestContext.applicationContext.out(response);
+            this.requestContext.json(response);
         }
 
         // response builder

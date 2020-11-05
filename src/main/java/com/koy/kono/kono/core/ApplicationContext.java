@@ -2,7 +2,7 @@ package com.koy.kono.kono.core;
 
 import com.koy.kono.kono.interceptor.InterceptorExecutor;
 import com.koy.kono.kono.interceptor.InterceptorFactory;
-import com.koy.kono.kono.route.Dispatcher;
+import com.koy.kono.kono.route.IDispatcher;
 import com.koy.kono.kono.route.DispatcherHandler;
 import com.koy.kono.kono.route.DispatcherInvocationHandler;
 import com.koy.kono.kono.route.RouteParser;
@@ -77,15 +77,15 @@ public class ApplicationContext {
         this.setConfigurationRequestContext(requestContext);
 
         // dispatch
-        Dispatcher dispatcherHandler = this.getDispatcherHandler(InterceptorExecutor.PRE);
+        IDispatcher dispatcherHandler = this.getDispatcherHandler(InterceptorExecutor.PRE);
         ControllerFactory handlerFactory = this.getControllerFactory();
         dispatcherHandler.dispatch(requestContext, channelHandlerContext, handlerFactory);
     }
 
     // return the request and remove the request context from holder
     public void out(FullHttpResponse response) {
-        Dispatcher dispatcherHandler = this.getDispatcherHandler(InterceptorExecutor.POST);
-        dispatcherHandler.dispatch(response);
+        IDispatcher dispatcherHandler = this.getDispatcherHandler(InterceptorExecutor.POST);
+        dispatcherHandler.dispatch(requestContext.get(), response);
         this.removeRequestContext();
     }
 
@@ -98,9 +98,9 @@ public class ApplicationContext {
     }
 
     // return the proxy object, which keep the InterceptorExecutor.
-    private Dispatcher getDispatcherHandler(InterceptorExecutor executor) {
-        return (Dispatcher) Proxy.newProxyInstance(DefaultClassLoader.getDefaultClassLoader()
-                , new Class[]{Dispatcher.class}
+    private IDispatcher getDispatcherHandler(InterceptorExecutor executor) {
+        return (IDispatcher) Proxy.newProxyInstance(DefaultClassLoader.getDefaultClassLoader()
+                , new Class[]{IDispatcher.class}
                 , new DispatcherInvocationHandler(executor, this.dispatcherHandler));
     }
 

@@ -17,7 +17,7 @@ public interface IInterceptor {
     }
 
 
-    default Predicate<FullHttpResponse> postHandle() {
+    default Predicate<RequestContext> postHandle() {
         return rep -> true;
     }
 

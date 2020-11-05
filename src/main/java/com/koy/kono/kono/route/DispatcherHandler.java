@@ -17,7 +17,7 @@ import java.lang.reflect.Method;
  * @Description the dispatcher handler will dispatch the request and the response.
  */
 
-public class DispatcherHandler implements Dispatcher {
+public class DispatcherHandler implements IDispatcher {
 
     private RouteParser routeParser;
     private ApplicationContext applicationContext;
@@ -36,7 +36,7 @@ public class DispatcherHandler implements Dispatcher {
         RouterMatch routerMatch = dispatch.getRouterMatch();
         if (RouterMatch.FOUND != routerMatch) {
             // TODO redirect to miss controller
-            dispatch(new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.NOT_FOUND));
+            dispatch(ctx, new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.NOT_FOUND));
             // finished
             return null;
         }
@@ -62,7 +62,7 @@ public class DispatcherHandler implements Dispatcher {
     }
 
     @Override
-    public void dispatch(FullHttpResponse response) {
+    public void dispatch(RequestContext requestContext, FullHttpResponse response) {
         channelHandlerContext.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
     }
 }
