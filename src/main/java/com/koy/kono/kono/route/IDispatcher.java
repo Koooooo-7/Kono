@@ -10,11 +10,11 @@ import io.netty.handler.codec.http.FullHttpResponse;
  * @Description
  */
 
-public interface Dispatcher {
+public interface IDispatcher {
 
     Dispatch dispatch(RequestContext ctx, ChannelHandlerContext channelHandlerContext, ControllerFactory handlerFactory);
 
-    default void dispatch(FullHttpResponse response) {
+    default void dispatch(RequestContext requestContext, FullHttpResponse response) {
     }
 
 
