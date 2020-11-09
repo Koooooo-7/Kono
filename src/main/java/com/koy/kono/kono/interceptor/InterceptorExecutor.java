@@ -57,7 +57,7 @@ public enum InterceptorExecutor {
         return interceptorPredicateChain.test(target);
     }
 
-    // TODO: change to reduce
+    /// change to reduce, Predicate<T> predicates = interceptors.stream().reduce(Predicate::and).get();
     // translate list to predicate chain
     public <T> Predicate<T> getPredicateChain(LinkedList<Predicate<T>> interceptors, int index) {
         if (index > interceptors.size() - 1) {
