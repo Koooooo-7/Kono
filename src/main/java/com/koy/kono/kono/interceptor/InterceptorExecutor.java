@@ -2,7 +2,6 @@ package com.koy.kono.kono.interceptor;
 
 import com.koy.kono.kono.core.RequestContext;
 import io.netty.handler.codec.http.FullHttpRequest;
-import io.netty.handler.codec.http.FullHttpResponse;
 
 import java.util.*;
 import java.util.function.Function;
@@ -71,7 +70,8 @@ public enum InterceptorExecutor {
         // if request == null, there should have cache already, put by the request interceptor.
         if (Objects.isNull(matchedIInterceptorsCache.get())) {
             // TODO: change url to Router
-            String uri = request.uri();
+            // remove parameters
+            String uri = request.uri().replaceAll("\\?.*", "");
             List<IInterceptor> matchedInterceptors = this.registerInterceptors.stream()
                     .filter(interceptor -> interceptor.isMatchPathPatterns(uri))
                     .sorted(Comparator.comparingInt(IInterceptor::order))
