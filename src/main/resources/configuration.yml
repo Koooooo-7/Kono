@@ -1,3 +1,15 @@
+# the configuration files that providing configuration information for components of application.
+# replace/define this file at ur application resources fold, it will rewrite this default configuration
+# file( it is based on the dependence rule/order to load the resources that jdk first, current classes later,
+# the 3rd jar at last. so you should load the current classpath before you import the dependencies on jars.)
+
+
+# server port, default
 port:
   9001
+
+# location of controllers, default
 controllerLocation: com.koy.kono.app
+
+# location of interceptor, default
+interceptorLocation: com.koy.kono.app.interceptor
