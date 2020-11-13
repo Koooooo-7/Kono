@@ -1,4 +1,4 @@
-package com.koy.kono.app;
+package com.koy.kono.sample;
 
 import com.koy.kono.kono.Kono;
 

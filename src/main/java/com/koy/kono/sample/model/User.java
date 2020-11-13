@@ -1,4 +1,4 @@
-package com.koy.kono.app.model;
+package com.koy.kono.sample.model;
 
 import com.koy.kono.kono.model.BaseModel;
 

@@ -1,4 +1,4 @@
-package com.koy.kono.app.controller;
+package com.koy.kono.sample.controller;
 
 import com.koy.kono.kono.core.BaseController;
 

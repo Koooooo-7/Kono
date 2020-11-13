@@ -1,4 +1,4 @@
-package com.koy.kono.app.interceptor;
+package com.koy.kono.sample.interceptor;
 
 import com.koy.kono.kono.core.RequestContext;
 import com.koy.kono.kono.interceptor.IInterceptor;
