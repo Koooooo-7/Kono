@@ -14,6 +14,7 @@ public class Configuration {
 
     private Integer port = 9001;
     private Protocol protocol = Protocol.HTTP;
+    private Boolean showBanner = Boolean.TRUE;
     // TODO: multi location
     private String controllerLocation = "com.koy.kono.app.controller";
     private String interceptorLocation = "com.koy.kono.app.interceptor";
@@ -117,5 +118,13 @@ public class Configuration {
 
     public void setDataSource(DataSource dataSource) {
         this.dataSource = dataSource;
+    }
+
+    public Boolean getShowBanner() {
+        return showBanner;
+    }
+
+    public void setShowBanner(Boolean showBanner) {
+        this.showBanner = showBanner;
     }
 }

@@ -32,18 +32,6 @@ public class Dispatch {
         return routerMatch;
     }
 
-    public void setRouterMatch(RouterMatch routerMatch) {
-        this.routerMatch = routerMatch;
-    }
-
-    public ChannelHandlerContext getChannelHandlerContext() {
-        return channelHandlerContext;
-    }
-
-    public void setChannelHandlerContext(ChannelHandlerContext channelHandlerContext) {
-        this.channelHandlerContext = channelHandlerContext;
-    }
-
     public ControllerFactory getHandler() {
         return handler;
     }
@@ -56,15 +44,8 @@ public class Dispatch {
         return targetController;
     }
 
-    public void setTargetController(MetaController targetController) {
-        this.targetController = targetController;
-    }
-
     public Method getTargetMethod() {
         return targetMethod;
     }
 
-    public void setTargetMethod(Method targetMethod) {
-        this.targetMethod = targetMethod;
-    }
 }

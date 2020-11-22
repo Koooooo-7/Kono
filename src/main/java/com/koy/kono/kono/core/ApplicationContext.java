@@ -123,9 +123,10 @@ public class ApplicationContext {
         }
 
         public void print() {
-            // TODO: whether print banner
-            Banner banner = getBanner();
-            banner.printBanner();
+            if (configuration.getShowBanner()){
+                Banner banner = getBanner();
+                banner.printBanner();
+            }
         }
 
         private Banner getBanner() {

@@ -9,7 +9,10 @@ port:
   9001
 
 # location of controllers, default
-controllerLocation: com.koy.kono.app
+controllerLocation: com.koy.kono.sample
 
 # location of interceptor, default
-interceptorLocation: com.koy.kono.app.interceptor
+interceptorLocation: com.koy.kono.sample.interceptor
+
+# show banner
+showBanner: true
