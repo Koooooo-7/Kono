@@ -24,9 +24,9 @@ public class DispatcherInvocationHandler implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         // TODO interceptors
-        boolean interceptor = executor.doInterceptor(args);
+        boolean pass = executor.doInterceptor(args);
         // TODO: fix me
-        if (!interceptor) {
+        if (!pass) {
             handler.dispatch((RequestContext) args[0], ((RequestContext) args[0]).getResponse());
             return null;
         }
