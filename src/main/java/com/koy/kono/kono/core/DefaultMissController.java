@@ -6,4 +6,9 @@ package com.koy.kono.kono.core;
  */
 
 public class DefaultMissController extends BaseController {
+
+    public void miss(){
+         this.getRequest().send("nothing found").json();
+    }
+
 }

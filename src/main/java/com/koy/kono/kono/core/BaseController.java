@@ -11,6 +11,7 @@ public abstract class BaseController {
 
     private RequestContext requestContext;
 
+    private BaseController missController = new DefaultMissController();
     // default controller base route
     public final String getBaseRoute() {
         return this.getClass().getSimpleName();
@@ -18,8 +19,8 @@ public abstract class BaseController {
 
     // TODO: on miss response
     @KonoMethod
-    public String miss() {
-        return "";
+    private void miss() {
+        missController.miss();
     }
 
     public RequestContext getRequest() {
@@ -37,5 +38,7 @@ public abstract class BaseController {
         return requestContext;
     }
 
-
+    public void setMissController(BaseController controller){
+        this.missController = controller;
+    }
 }
