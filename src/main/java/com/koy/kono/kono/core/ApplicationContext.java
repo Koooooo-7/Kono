@@ -43,6 +43,8 @@ public class ApplicationContext {
         // load configuration
         DefaultClassLoader classLoader = new DefaultClassLoader(configuration);
 
+        BootsListener bootsListener = new BootsListener(this);
+        bootsListener.notifyListener();
         // load controller meta data
         controllerFactory = new ControllerFactory();
         controllerFactory.loadControllers(classLoader, configuration);
