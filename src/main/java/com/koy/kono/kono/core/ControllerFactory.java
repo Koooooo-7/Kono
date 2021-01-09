@@ -85,7 +85,7 @@ public class ControllerFactory implements IController {
     private boolean isControllerRouteMethod(Method m) {
         boolean is = false;
         try {
-            is = m.getDeclaringClass().getSuperclass().isAssignableFrom(BaseController.class)
+            is = BaseController.class.isAssignableFrom(m.getDeclaringClass())
                     && Modifier.isPublic(m.getModifiers())
                     && "void".equals(m.getReturnType().getName())
                     && m.getParameterCount() == 0;
