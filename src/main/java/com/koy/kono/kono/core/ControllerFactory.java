@@ -1,6 +1,5 @@
 package com.koy.kono.kono.core;
 
-import io.netty.handler.codec.http.DefaultHttpHeaders;
 import io.netty.util.internal.StringUtil;
 
 import java.lang.reflect.*;
@@ -32,10 +31,6 @@ public class ControllerFactory implements IController {
             Object instance = clz.getDeclaredConstructor().newInstance();
             Method getBaseRouter = clz.getMethod("getBaseRoute");
             String controllerName = (String) getBaseRouter.invoke(instance);
-
-//            controllerName = StringUtil.isNullOrEmpty(controllerName) ?
-//                    name.replace(configuration.getControllerLocation(), "")
-//                            .replaceFirst("(?i)Controller", "") : controllerName;
 
             // if the controllerName return '/name', should remove the / first.
             String baseRouter = "/" + controllerName
