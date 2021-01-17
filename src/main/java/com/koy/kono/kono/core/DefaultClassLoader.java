@@ -41,6 +41,13 @@ public class DefaultClassLoader {
         return classes;
     }
 
+    public Set<Class<? extends IRouter>> findRouterClasses() {
+        String packageName = configuration.getRouteBinderLocation();
+        Reflections reflections = new Reflections(packageName);
+
+        return reflections.getSubTypesOf(IRouter.class);
+    }
+
     public static ClassLoader getDefaultClassLoader() {
         ClassLoader cl = null;
         try {

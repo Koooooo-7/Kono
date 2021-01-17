@@ -14,10 +14,15 @@ import java.util.concurrent.ConcurrentHashMap;
  * @Description Control all the meta info of controllers as a handler.
  */
 
-public class ControllerFactory implements IController {
+public class ControllerFactory implements IController, IFactory {
     private static final ConcurrentHashMap<String, MetaController> controllers = new ConcurrentHashMap<>();
 
-    public void loadControllers(DefaultClassLoader classLoader, Configuration configuration) {
+    @Override
+    public void load(DefaultClassLoader defaultClassLoader, Configuration configuration) {
+        loadControllers(defaultClassLoader, configuration);
+    }
+
+    private void loadControllers(DefaultClassLoader classLoader, Configuration configuration) {
         Set<Class<? extends BaseController>> classes = classLoader.findControllerClasses();
 
         for (Class<?> clz : classes) {

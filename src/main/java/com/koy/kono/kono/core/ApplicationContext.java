@@ -47,11 +47,11 @@ public class ApplicationContext {
         bootsListener.notifyListener();
         // load controller meta data
         controllerFactory = new ControllerFactory();
-        controllerFactory.loadControllers(classLoader, configuration);
+        controllerFactory.load(classLoader, configuration);
 
         // load interceptor
-        InterceptorFactory interceptorFactory = new InterceptorFactory();
-        interceptorFactory.loadInterceptors(classLoader, configuration);
+        IFactory interceptorFactory = new InterceptorFactory();
+        interceptorFactory.load(classLoader, configuration);
 
         // initial router parser that register all the controller meta
         RouteParser routeParser = new RouteParser(controllerFactory);

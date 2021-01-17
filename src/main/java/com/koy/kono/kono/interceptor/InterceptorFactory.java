@@ -2,6 +2,7 @@ package com.koy.kono.kono.interceptor;
 
 import com.koy.kono.kono.core.Configuration;
 import com.koy.kono.kono.core.DefaultClassLoader;
+import com.koy.kono.kono.core.IFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Set;
@@ -11,9 +12,14 @@ import java.util.Set;
  * @Description
  */
 
-public class InterceptorFactory {
+public class InterceptorFactory implements IFactory {
 
-    public void loadInterceptors(DefaultClassLoader classLoader, Configuration configuration) {
+    @Override
+    public void load(DefaultClassLoader defaultClassLoader, Configuration configuration) {
+        loadInterceptors(defaultClassLoader, configuration);
+    }
+
+    private void loadInterceptors(DefaultClassLoader classLoader, Configuration configuration) {
         Set<Class<? extends IInterceptor>> classes = classLoader.findInterceptorClasses();
 
         try {

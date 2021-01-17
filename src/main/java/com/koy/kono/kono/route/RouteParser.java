@@ -48,7 +48,7 @@ public class RouteParser implements IDispatcher {
         }
     }
 
-    private static class Router {
+    public static class Router {
 
         private String baseRoute;
         private RouterMatch routerMatch;

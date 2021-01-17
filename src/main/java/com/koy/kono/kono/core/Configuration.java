@@ -18,6 +18,7 @@ public class Configuration {
     // TODO: multi location
     private String controllerLocation = "com.koy.kono.app.controller";
     private String interceptorLocation = "com.koy.kono.app.interceptor";
+    private String routeBinderLocation = "com.koy.kono.app.router";
 
     private Map<String, String> routers = new HashMap<>();
 
@@ -126,5 +127,13 @@ public class Configuration {
 
     public void setShowBanner(Boolean showBanner) {
         this.showBanner = showBanner;
+    }
+
+    public String getRouteBinderLocation() {
+        return routeBinderLocation;
+    }
+
+    public void setRouteBinderLocation(String routeBinderLocation) {
+        this.routeBinderLocation = routeBinderLocation;
     }
 }
