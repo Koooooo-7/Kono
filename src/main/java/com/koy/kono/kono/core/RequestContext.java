@@ -333,4 +333,16 @@ public class RequestContext {
     public FullHttpRequest getRequest() {
         return request;
     }
+
+    // change this response status
+    public RequestContext setStatus(HttpResponseStatus status) {
+        this.response.setStatus(status);
+        return this;
+    }
+
+    // change the response info
+    public RequestContext setContent(String content) {
+        this.setContent(Unpooled.wrappedBuffer(content.getBytes()));
+        return this;
+    }
 }

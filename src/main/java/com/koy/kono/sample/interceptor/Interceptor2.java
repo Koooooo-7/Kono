@@ -18,8 +18,8 @@ public class Interceptor2 implements IInterceptor {
     public Predicate<RequestContext> postHandle() {
         return e -> {
             // change the response info
-            e.getResponse().setStatus(HttpResponseStatus.BAD_REQUEST);
-            e.setContent(Unpooled.wrappedBuffer("New Response".getBytes()));
+            e.setStatus(HttpResponseStatus.BAD_REQUEST);
+            e.setContent("Rewrite Response and HTTP STATUS CODE");
             return false;
         };
     }
