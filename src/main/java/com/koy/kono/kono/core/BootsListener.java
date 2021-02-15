@@ -1,5 +1,6 @@
 package com.koy.kono.kono.core;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -10,7 +11,7 @@ import java.util.List;
 public class BootsListener {
 
     private ApplicationContext applicationContext;
-    private List<BootsListener> listeners;
+    private List<BootsListener> listeners = new ArrayList<>();
 
     BootsListener(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
