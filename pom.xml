@@ -13,7 +13,7 @@
         <netty.version>4.1.42.Final</netty.version>
         <snakeyaml.version>1.27</snakeyaml.version>
         <reflections.version>0.9.12</reflections.version>
-        <fastjson.version>1.2.73</fastjson.version>
+        <fastjson.version>1.2.83</fastjson.version>
         <jooq.version>3.9.6</jooq.version>
     </properties>
 
