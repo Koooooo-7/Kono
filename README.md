@@ -4,7 +4,7 @@
 
 <h1 align="center">Kono</h1>
 <p align="center">
-    <em>💊 A simplified lightweight web framework.</em>
+    <em>💊 A simplified lightweight restful web framework.</em>
 </p>
 
 *When I used lots of out-of-box stuff, I wanna create something by myself, it does not matter whether it is fellowing the trending right now. I just wanna integrate those classic features from different languages/frameworks in my mind to one place, thus `Kono` is here, which is a simplified lightweight web framework.*
